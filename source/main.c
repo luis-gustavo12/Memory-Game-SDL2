@@ -2,13 +2,16 @@
 
 int running;
 SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL; // main renderer
+SDL_Renderer* mainRenderer = NULL; // main renderer
 TTF_Font* font = NULL;
 SDL_Color textColor = {188, 188, 188};
-SDL_Texture* texture; // main background texture
+SDL_Texture* mainTexture; // main background texture
 SDL_Event ev;
 int txtWidth, txtHeight;
 SDL_Rect rect;
+GameMenu menu;
+
+
 
 int Init() {
 
@@ -43,9 +46,9 @@ int SetObjects() {
         return -1;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    mainRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    if (!renderer) {
+    if (!mainRenderer) {
         PRINT_ERROR_MSG;
         return -1;
     }
@@ -67,9 +70,9 @@ int SetObjects() {
         surface->format, 26,190,99
     ));
 
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    mainTexture = SDL_CreateTextureFromSurface(mainRenderer, surface);
 
-    if (!texture) {
+    if (!mainTexture) {
         PRINT_ERROR_MSG;
         SDL_Quit();
         return -1;
@@ -77,14 +80,20 @@ int SetObjects() {
 
     SDL_FreeSurface(surface);
 
-    SDL_QueryTexture(texture, NULL, NULL, &txtWidth, &txtHeight);
-
-
+    SDL_QueryTexture(mainTexture, NULL, NULL, &txtWidth, &txtHeight);
 
     rect.x = WINDOW_WIDTH / 3;
     rect.y = WINDOW_HEIGHT / 3;
     rect.w = txtWidth;
     rect.h = txtHeight;
+
+    // set menu
+    menu.textColor.r = 188;
+    menu.textColor.g = 188;
+    menu.textColor.b = 188;
+    menu.textColor.a = 255;
+
+
 
     return 1;
 
@@ -104,9 +113,6 @@ int InitExternalMedia() {
 
 }
 
-
-
-int sd = 1;
 
 
 int main(int argc, char* argv[]) {
@@ -141,10 +147,7 @@ int main(int argc, char* argv[]) {
                     break;
 
                 case SDL_KEYDOWN:
-                    break;
-
-                default:
-                    break;
+                break;
 
             }
 
@@ -158,73 +161,41 @@ int main(int argc, char* argv[]) {
         switch (gameState) {
         case MENU: {
 
-            SDL_RenderClear(renderer);
-
-            // start game button
-            SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Start Game", textColor);
-            SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-            // Get the dimensions of the text texture
             int textWidth, textHeight;
-            SDL_QueryTexture(textTexture, NULL, NULL, &textWidth, &textHeight);
+            SDL_Surface* surface;
+            SDL_Texture* texture;
+            Button startGameButton;
+            Button exitButton;
 
-            // copy texture to the renderer
-            SDL_RenderCopy(renderer, texture, NULL, NULL);
+            SDL_RenderClear(mainRenderer);
 
-            // set color to purple
-            SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255);
+            // set to purple
+            SDL_SetRenderDrawColor(mainRenderer, 128, 0, 128, 255);
 
-            // add set start game rectangle
-            SDL_Rect startGameButton = {300, 200, 375, 150};
-            SDL_RenderFillRect(renderer, &startGameButton);
+            SetButton(&startGameButton, "Start Game");
+            SetButtonBackGroundPositions(&startGameButton, 300, 200, 375, 150);
+            SetButtonTextPositions(&startGameButton, 350, 275);
+            RenderButton(mainRenderer, font, &startGameButton, menu, mainTexture, surface, texture);
 
-            SDL_Rect textStartGame = {350, 275, textWidth, textHeight};
-            SDL_RenderCopy(renderer, textTexture, NULL, &textStartGame);
 
-            SDL_FreeSurface(textSurface);
-            SDL_DestroyTexture(textTexture);
 
-            SDL_Surface* exitSurface = TTF_RenderText_Solid(font, "Exit Game", textColor);
-            SDL_Texture* exitTexture = SDL_CreateTextureFromSurface(renderer, exitSurface);
+            /////////////////////////////////////////////////////////////////////////////////
 
-            SDL_QueryTexture(exitTexture, NULL, NULL, &textWidth, &textHeight);
 
-            SDL_Rect exitButton = { 300, 500, 375, 150 };
-            SDL_RenderFillRect(renderer, &exitButton);
+            SetButton(&exitButton, "Exit Game");
+            SetButtonBackGroundPositions(&exitButton, 300, 500, 375, 150);
+            SetButtonTextPositions(&exitButton, 350, 525);
+            RenderButton(mainRenderer, font, &exitButton, menu, mainTexture, surface,texture);
+            
 
-            SDL_Rect exitText = {350, 525, textWidth, textHeight};
 
-            SDL_RenderCopy(renderer, exitTexture, NULL, &exitText);
 
-            SDL_FreeSurface(exitSurface);
-            SDL_DestroyTexture(exitTexture);
 
-            SDL_RenderPresent(renderer);
-
-            // // quit game
-            // textSurface = TTF_RenderText_Solid(font, "Quit Game", textColor);
-            // textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-
-            // SDL_RenderClear(renderer);
-
-            // // copy texture to the renderer
-            // SDL_RenderCopy(renderer, texture, NULL, NULL);
-
-            // SDL_QueryTexture(textTexture, NULL, NULL, &textWidth, &textHeight);
-
-            // // quit game button
-            // SDL_Rect quitGameButton = { 300, 400, 200, 200  };
-            // SDL_RenderFillRect(renderer, &quitGameButton);
-            // SDL_Rect textQuitGame = {350, 275, 200, 200 };
-            // SDL_RenderCopy(renderer, texture, NULL, &textQuitGame);
-            // SDL_RenderClear(renderer);
-            // SDL_RenderPresent(renderer);
-
-            // SDL_RenderClear(renderer);
+            SDL_RenderPresent(mainRenderer);
 
             // display menu
             break;
 
-            break;
         } // case MENU
         
         case GAME:
@@ -239,7 +210,6 @@ int main(int argc, char* argv[]) {
 
         SDL_Delay(50);
 
-        SDL_RenderPresent(renderer);
 
         
 
@@ -252,8 +222,8 @@ int main(int argc, char* argv[]) {
 
     
 
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);
+    SDL_DestroyTexture(mainTexture);
+    SDL_DestroyRenderer(mainRenderer);
     TTF_CloseFont(font);
     SDL_DestroyWindow(window);
     TTF_Quit();
