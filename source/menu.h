@@ -21,18 +21,16 @@ typedef struct GameMenu {
 
     SDL_Color textColor; // text color
     Uint8 colors[3]; // button background color
-    Button buttons [10];
-    int buttonsSize;
 
 } GameMenu;
 
 
 void SetButton(Button* button, char* text);
 
-void SetButtonBackGroundPositions(Button *button, int x, int y, int w, int h);
+void SetButtonBackGroundPositions(Button* button, int x, int y, int w, int h);
 
-void SetButtonTextPositions(Button* button, int x, int y);
+void SetButtonTextPositions(Button* button);
 
-void RenderButton(SDL_Renderer* renderer, TTF_Font* font, Button* button, GameMenu menu, SDL_Texture* mainTexture, SDL_Surface* surface, SDL_Texture* texture);
+void RenderButton(SDL_Renderer* renderer, TTF_Font* font, Button* button);
 
 
