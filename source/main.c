@@ -9,24 +9,8 @@ SDL_Event ev;
 int txtWidth, txtHeight;
 SDL_Rect rect;
 GameMenu menu;
+MouseCoordinate mouse; // this gets the current x and y coordinates when there's a click
 
-
-#ifndef REFACTOR
-void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y) {
-    SDL_Color color = {255, 255, 255}; // White color
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    int textWidth = surface->w;
-    int textHeight = surface->h;
-
-    SDL_Rect textRect = {x + (100 - textWidth) / 2, y + (50 - textHeight) / 2, textWidth, textHeight};
-    SDL_RenderCopy(renderer, texture, NULL, &textRect);
-
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
-}
-#endif
 
 
 
@@ -96,6 +80,8 @@ int InitExternalMedia() {
 
 int main(int argc, char* argv[]) {
 
+    Button startGameButton;
+    Button exitButton;
 
     if (Init() <= 0) exit(-1);
 
@@ -103,15 +89,29 @@ int main(int argc, char* argv[]) {
 
     if (InitExternalMedia() <= 0) exit(-1);
 
-    running = true;
-    enum STATES gameState = MENU;
 
+    // setting menu buttons. Moved from main display display switch case
+    SetButton(&startGameButton, "Start Game");
+    SetButtonBackGroundPositions(&startGameButton, 150, 200, 375, 150);
+    SetButtonTextPositions(&startGameButton);
+
+    SetButton(&exitButton, "Exit Game");
+    SetButtonBackGroundPositions(&exitButton, 150, 500, 375, 150);
+    SetButtonTextPositions(&exitButton);
+
+
+
+    running = true;
+    States gameState = MENU;
+    bool skip = 0;
+    InputType inputType = EMPTY;
 
 
     // main loop
     while (running) {
 
         while ( SDL_PollEvent( &ev ) != 0 ) {
+
 
             // process input
             switch (ev.type) {
@@ -121,63 +121,95 @@ int main(int argc, char* argv[]) {
                 running = false;
                 continue;
 
-            case SDL_MOUSEBUTTONUP:
-                //ProcessMouseInput(ev, renderer, rect);
+            case SDL_MOUSEBUTTONDOWN:
+                printf("SDL_MOUSEBUTTONDOWN\n");
+                inputType = MOUSE;
+                ProcessMouse(&ev, &mouse);
                 break;
 
             case SDL_KEYDOWN:
+                inputType = KEYBOARD;
+                if (ProcessKeyboard(&ev) == false) {
+                    running = false;
+                    skip = true;
+                }
+                
                 break;
 
             }
 
         } // SDL_PollEvent( &ev )
 
-        // display 
+        // display use this file's times instead of current time
+
         
+        if (skip) {
+            skip = false;
+            continue;
+        }
+
 
         switch (gameState) {
         case MENU: {
-
-            Button startGameButton;
-            Button exitButton;
 
             // set background color to green -> 115, 214, 71
             SDL_SetRenderDrawColor(mainRenderer, 115, 214, 71, 255);
 
             SDL_RenderClear(mainRenderer);
 
-            SetButton(&startGameButton, "Start Game");
-            SetButtonBackGroundPositions(&startGameButton, 150, 200, 375, 150);
-            SetButtonTextPositions(&startGameButton);
             RenderButton(mainRenderer, font, &startGameButton);
 
-            /////////////////////////////////////////////////////////////////////////////////
 
-            SetButton(&exitButton, "Exit Game");
-            SetButtonBackGroundPositions(&exitButton, 150, 500, 375, 150);
-            SetButtonTextPositions(&exitButton);
+
             RenderButton(mainRenderer, font, &exitButton);
 
             SDL_RenderPresent(mainRenderer);
+
+            // menu only has buttons for now, so I'm checking the position of the click, one by one
+            // In the future, either will be an array of buttons, or a va_list on the function
+            // mark this as TODO: 
+
+            if (inputType == MOUSE) {
+                if (  ClickedInside(mouse, startGameButton) ) {
+                    gameState = GAME;
+                    break;
+                } 
+
+
+                if (ClickedInside(mouse, exitButton) ) {
+                    running = false;
+                    break;
+                }
+                inputType = EMPTY;
+            }
+
 
             break;
 
         } // case MENU
         
-        case GAME:
-            // display game
+        case GAME: {
+            printf("GAME GAME GAME\n");
+
+            SDL_RenderClear(mainRenderer);
+
+            SDL_SetRenderDrawColor(mainRenderer, 188, 188, 188, 255);
+
+            SDL_RenderPresent(mainRenderer);
+
             break;
+
+        }
 
         default:
             break;
         }
 
         
-
+        
         SDL_Delay(50);
 
 
-        
 
     } //while (running)
 

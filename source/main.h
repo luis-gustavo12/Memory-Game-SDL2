@@ -7,13 +7,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "input.h"
+#include "display.h"
 #include "menu.h"
 
-#define PRINT_ERROR_MSG printf("ERROR %d: [%s]\n", __LINE__ ,SDL_GetError())
-
-
 // defines
-
+#define PRINT_ERROR_MSG printf("ERROR %d: [%s]\n", __LINE__ ,SDL_GetError())
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
@@ -22,17 +20,25 @@
 // structs
 
 
-typedef enum STATES {
+
+typedef enum InputType {
+    EMPTY,
+    KEYBOARD,
+    MOUSE
+} InputType;
+
+
+typedef enum States {
     MENU,
     GAME
-} STATES;
+} States;
 
 
 
 // variables
 
 
-extern enum STATES gameState;
+extern States gameState;
 
 
 // functions

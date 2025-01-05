@@ -1,46 +1,38 @@
 #include "input.h"
 
-enum STATES gameState;
 
 
 
+int ProcessKeyboard(SDL_Event* ev) {
 
+    printf("KEY: %d\n", ev->key.keysym.scancode);
 
-void ProcessMouseInput(SDL_Event ev, SDL_Renderer* renderer, SDL_Rect rect) {
-
-    int state = ev.motion.state;
-
-    printf("X: %d    Y: %d\n", ev.motion.x, ev.motion.y);
-
-    switch (ev.button.button) {
-
-    case SDL_BUTTON_LEFT:
-
-        printf("BUTTON LEFT!!\n");
-        printf("RECT H: %d WIDTH: %d X: %d Y: %d\n", rect.h,
-            rect.w, rect.x, rect.y);
-
-
-        switch (gameState) {
-        case MENU:
-            
-            printf("MENU\n");
-
-            break;
-
-        case GAME:
-
-
-            break;
-        
-        default:
-            break;
-        }
-        
-        
+    switch (ev->key.keysym.scancode) {
+    
+    case SDL_SCANCODE_ESCAPE:
+    case SDL_SCANCODE_Q:
+        return 0;
         break;
+    
     
     default:
         break;
     }
+
+    return 1;
+
+}
+
+int ProcessMouse(SDL_Event* ev, MouseCoordinate* mouse) {
+
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+    printf("CLICK PROCESS X: %d Y: %d\n", ev->button.x, ev->button.y);
+
+
+    mouse->xClick = ev->button.x;
+    mouse->yClick = ev->button.y;
+    
+
+    return 1;
 }

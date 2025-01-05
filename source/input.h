@@ -1,20 +1,25 @@
 #pragma once
 
-#include "main.h"
+
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "menu.h"
+
 
 // structs
 
 
-
+typedef struct {
+    int xClick;
+    int yClick;
+} MouseCoordinate;
 
 // variables
 
 
 // functions
 
+int ProcessKeyboard(SDL_Event* ev);
 
-void ProcessMouseInput(SDL_Event ev, SDL_Renderer* renderer, SDL_Rect rect);
+int ProcessMouse(SDL_Event* ev, MouseCoordinate* mouse);
+
