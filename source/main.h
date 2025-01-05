@@ -9,6 +9,7 @@
 #include "input.h"
 #include "display.h"
 #include "menu.h"
+#include "game.h"
 
 // defines
 #define PRINT_ERROR_MSG printf("ERROR %d: [%s]\n", __LINE__ ,SDL_GetError())
@@ -45,3 +46,4 @@ extern States gameState;
 
 int Init();
 int SetObjects();
+int CleanAndExit();

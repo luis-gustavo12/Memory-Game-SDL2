@@ -8,7 +8,8 @@ SDL_Color textColor = {188, 188, 188};
 SDL_Event ev;
 int txtWidth, txtHeight;
 SDL_Rect rect;
-GameMenu menu;
+GameMenu menu = {{153, 153, 153, 255}};
+Game game;
 MouseCoordinate mouse; // this gets the current x and y coordinates when there's a click
 
 
@@ -32,8 +33,6 @@ int Init() {
 
 
 int SetObjects() {
-
-    SDL_Surface* surface = NULL;
 
     window = SDL_CreateWindow(
         "Memory Game",
@@ -77,6 +76,18 @@ int InitExternalMedia() {
 }
 
 
+int CleanAndExit() {
+
+    if (mainRenderer != NULL) SDL_DestroyRenderer(mainRenderer);
+    if (window != NULL) SDL_DestroyWindow(window);
+    if (font != NULL) TTF_CloseFont(font);
+    SDL_Quit();
+    TTF_Quit();
+
+    return -1;
+}
+
+
 
 int main(int argc, char* argv[]) {
 
@@ -85,21 +96,13 @@ int main(int argc, char* argv[]) {
 
     if (Init() <= 0) exit(-1);
 
-    if (SetObjects() <= 0) exit(-1);
+    if (SetObjects() <= 0) return CleanAndExit();
 
-    if (InitExternalMedia() <= 0) exit(-1);
+    if (InitExternalMedia() <= 0) return CleanAndExit();
 
+    InitMenuButtons(&startGameButton, &exitButton);
 
-    // setting menu buttons. Moved from main display display switch case
-    SetButton(&startGameButton, "Start Game");
-    SetButtonBackGroundPositions(&startGameButton, 150, 200, 375, 150);
-    SetButtonTextPositions(&startGameButton);
-
-    SetButton(&exitButton, "Exit Game");
-    SetButtonBackGroundPositions(&exitButton, 150, 500, 375, 150);
-    SetButtonTextPositions(&exitButton);
-
-
+    if (InitGame(&game) != 1) return CleanAndExit();
 
     running = true;
     States gameState = MENU;
@@ -124,12 +127,12 @@ int main(int argc, char* argv[]) {
             case SDL_MOUSEBUTTONDOWN:
                 printf("SDL_MOUSEBUTTONDOWN\n");
                 inputType = MOUSE;
-                ProcessMouse(&ev, &mouse);
+                ProcessMouseInput(&ev, &mouse);
                 break;
 
             case SDL_KEYDOWN:
                 inputType = KEYBOARD;
-                if (ProcessKeyboard(&ev) == false) {
+                if (ProcessKeyboardInput(&ev) == false) {
                     running = false;
                     skip = true;
                 }
@@ -157,11 +160,10 @@ int main(int argc, char* argv[]) {
 
             SDL_RenderClear(mainRenderer);
 
-            RenderButton(mainRenderer, font, &startGameButton);
+            RenderButton(mainRenderer, font, &startGameButton, menu.textColor);
 
 
-
-            RenderButton(mainRenderer, font, &exitButton);
+            RenderButton(mainRenderer, font, &exitButton, menu.textColor);
 
             SDL_RenderPresent(mainRenderer);
 

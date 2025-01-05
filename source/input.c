@@ -3,7 +3,7 @@
 
 
 
-int ProcessKeyboard(SDL_Event* ev) {
+int ProcessKeyboardInput(SDL_Event* ev) {
 
     printf("KEY: %d\n", ev->key.keysym.scancode);
 
@@ -23,12 +23,7 @@ int ProcessKeyboard(SDL_Event* ev) {
 
 }
 
-int ProcessMouse(SDL_Event* ev, MouseCoordinate* mouse) {
-
-    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-
-    printf("CLICK PROCESS X: %d Y: %d\n", ev->button.x, ev->button.y);
-
+int ProcessMouseInput(SDL_Event* ev, MouseCoordinate* mouse) {
 
     mouse->xClick = ev->button.x;
     mouse->yClick = ev->button.y;

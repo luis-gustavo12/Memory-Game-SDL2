@@ -17,4 +17,9 @@ typedef struct GameMenu {
 
 
 
+/// @brief Init the buttons for the menus. Better do it before the main loop
+/// @param startBtn start button
+/// @param exitBtn exit button
+/// @return  1 for success, 0, for failure
+int InitMenuButtons(Button* startBtn, Button* exitBtn);
 

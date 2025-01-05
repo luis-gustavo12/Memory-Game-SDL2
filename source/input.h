@@ -19,7 +19,7 @@ typedef struct {
 
 // functions
 
-int ProcessKeyboard(SDL_Event* ev);
+int ProcessKeyboardInput(SDL_Event* ev);
 
-int ProcessMouse(SDL_Event* ev, MouseCoordinate* mouse);
+int ProcessMouseInput(SDL_Event* ev, MouseCoordinate* mouse);
 
