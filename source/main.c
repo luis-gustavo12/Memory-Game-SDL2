@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
     if (InitGame(&game) != 1) return CleanAndExit();
 
     running = true;
-    States gameState = MENU;
+    gameState = MENU;
     bool skip = 0;
     InputType inputType = EMPTY;
 
@@ -162,7 +162,6 @@ int main(int argc, char* argv[]) {
 
             RenderButton(mainRenderer, font, &startGameButton, menu.textColor);
 
-
             RenderButton(mainRenderer, font, &exitButton, menu.textColor);
 
             SDL_RenderPresent(mainRenderer);
@@ -191,13 +190,8 @@ int main(int argc, char* argv[]) {
         } // case MENU
         
         case GAME: {
-            printf("GAME GAME GAME\n");
 
-            SDL_RenderClear(mainRenderer);
-
-            SDL_SetRenderDrawColor(mainRenderer, 188, 188, 188, 255);
-
-            SDL_RenderPresent(mainRenderer);
+            RenderGameScreen(mainRenderer, mouse, &game, font);
 
             break;
 

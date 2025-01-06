@@ -1,6 +1,6 @@
 /**
  * @file display.h
- * @brief This module gets all the display related operations/structs/functions.
+ * @brief This module gets all the display related structs and standards.
  * @version 0.1
  * @date 2025-01-05
  * 
@@ -9,17 +9,12 @@
  */
 
 
-
-
-
-
-
-
 #pragma once
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 #include "input.h"
+#include "states.h"
 
 
 /// @brief Representation of a button on the screen, can be used anywhere as long as

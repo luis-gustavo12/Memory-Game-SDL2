@@ -30,9 +30,6 @@ void RenderButton(SDL_Renderer* renderer, TTF_Font* font, Button* button, SDL_Co
     SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255); // set background to purple
     SDL_RenderFillRect(renderer, &button->buttonBackGround);
 
-    
-
-
 
     SDL_Surface* surface = TTF_RenderText_Solid(font, button->text, color);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);

@@ -10,6 +10,7 @@
 #include "display.h"
 #include "menu.h"
 #include "game.h"
+#include "states.h"
 
 // defines
 #define PRINT_ERROR_MSG printf("ERROR %d: [%s]\n", __LINE__ ,SDL_GetError())
@@ -22,24 +23,25 @@
 
 
 
-typedef enum InputType {
-    EMPTY,
-    KEYBOARD,
-    MOUSE
-} InputType;
+// typedef enum InputType {
+//     EMPTY,
+//     KEYBOARD,
+//     MOUSE
+// } InputType;
+
+// typedef enum States {
+//     MENU,
+//     GAME
+// } States;
 
 
-typedef enum States {
-    MENU,
-    GAME
-} States;
+
+
 
 
 
 // variables
 
-
-extern States gameState;
 
 
 // functions
