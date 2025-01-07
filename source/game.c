@@ -56,12 +56,19 @@ int InitGame(Game* game) {
     game->scoreButtonColor.a = 255;
 
     game->score = 0;
+
+    // Set stack to zero
+    game->stackSize = 0;
+    memset(&game->memoryQueue, 0, sizeof(MemoryQueue));
+    game->memoryQueue.first = NULL;
+    game->memoryQueue.last = NULL;
+    game->memoryQueue.size = 0;
     
 
     return 1;
 }
 
-int RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font) {
+void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font) {
 
     SDL_SetRenderDrawColor(renderer, 188, 188, 188, 255); // set background to gray
 
@@ -88,5 +95,82 @@ int RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* 
 
     SDL_RenderPresent(renderer);
 
-    return 1;
+
 }
+
+void ProcessGameLogic(Game* game, const MouseCoordinate mouse) {
+
+    int hit = false;
+    
+    // First, we need to check if the click was inside some of the squares
+
+    for (int i = 0; i < game->gameButtonsSize; i++) {
+
+        GameButtonsMap currentMap = game->map[i];
+
+        if (HasHitSquare(mouse, currentMap) == true) {
+
+            hit = true;
+            Enqueue(&game->memoryQueue, &game->map[i]);
+            game->score++;
+
+        } 
+
+    }
+
+    printf("SIZE: %d\n", game->memoryQueue.size);
+
+    if (hit == false) printf("not hit\n");
+
+    else printf("HITHITHITHTIHTITHITHI\n");
+
+    
+}
+
+int HasHitSquare(const MouseCoordinate mouse, GameButtonsMap map) {
+
+    if ( (mouse.xClick >= map.rectangle.x && mouse.xClick <= (map.rectangle.x + map.rectangle.w) )  && 
+        (mouse.yClick >= map.rectangle.y && mouse.yClick <= (map.rectangle.y + map.rectangle.h))  ) {
+
+            printf("INSIDE\n");
+            return 1;
+        }
+
+
+    return 0;
+}
+
+
+/* QUEUE RELATED OPERATIONS */
+
+void Enqueue(MemoryQueue* queue, GameButtonsMap* map) {
+
+    GameButtonsMap* newMap = map;
+
+    if (queue->first == NULL) {
+        queue->first = newMap;
+        queue->last = newMap;
+    }
+
+    else {
+        queue->last->next = newMap;
+        queue->last = newMap;
+
+    }
+
+    queue->size++;
+
+}
+
+
+
+/* QUEUE RELATED OPERATIONS -> END*/
+
+
+void ResetGame(Game* game) {
+
+    game->score = 0;
+
+
+}
+

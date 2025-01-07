@@ -11,7 +11,7 @@ SDL_Rect rect;
 GameMenu menu = {{153, 153, 153, 255}};
 Game game;
 MouseCoordinate mouse; // this gets the current x and y coordinates when there's a click
-
+bool enteredMenu = false;
 
 
 
@@ -59,7 +59,7 @@ int SetObjects() {
 
     return 1;
 
-}
+}int gameButtonsSize;
 
 /// @brief Initialize external stuff, like text (ttf), images, etc
 /// @return 1 for sucess, 0 or -1 for error
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
     if (InitExternalMedia() <= 0) return CleanAndExit();
 
     InitMenuButtons(&startGameButton, &exitButton);
-
+    int gameButtonsSize;
     if (InitGame(&game) != 1) return CleanAndExit();
 
     running = true;
@@ -125,7 +125,8 @@ int main(int argc, char* argv[]) {
                 continue;
 
             case SDL_MOUSEBUTTONDOWN:
-                printf("SDL_MOUSEBUTTONDOWN\n");
+                printf("SDL_MOUSEBUTTONDOWN X: %d Y: %d\n",
+                    ev.button.x, ev.button.y);
                 inputType = MOUSE;
                 ProcessMouseInput(&ev, &mouse);
                 break;
@@ -154,6 +155,7 @@ int main(int argc, char* argv[]) {
 
         switch (gameState) {
         case MENU: {
+
 
             // set background color to green -> 115, 214, 71
             SDL_SetRenderDrawColor(mainRenderer, 115, 214, 71, 255);
@@ -184,6 +186,7 @@ int main(int argc, char* argv[]) {
                 inputType = EMPTY;
             }
 
+            enteredMenu = true;
 
             break;
 
@@ -191,7 +194,16 @@ int main(int argc, char* argv[]) {
         
         case GAME: {
 
+            // this is the variable marker that checks if the game is going to be clicked
+            // for a second time, since whenever you go into the game, you need to reboot it
+            if (enteredMenu == true) {
+                ResetGame(&game);
+                enteredMenu = false;
+            }
+
             RenderGameScreen(mainRenderer, mouse, &game, font);
+
+            if (inputType == MOUSE) ProcessGameLogic(&game, mouse);
 
             break;
 
@@ -202,7 +214,13 @@ int main(int argc, char* argv[]) {
         }
 
         
-        
+        if (inputType == MOUSE) {
+            mouse.xClick = -1;
+            mouse.yClick = -1;
+        }
+
+        inputType = EMPTY;
+
         SDL_Delay(50);
 
 
