@@ -59,7 +59,9 @@ int SetObjects() {
 
     return 1;
 
-}int gameButtonsSize;
+}
+
+int gameButtonsSize;
 
 /// @brief Initialize external stuff, like text (ttf), images, etc
 /// @return 1 for sucess, 0 or -1 for error

@@ -63,4 +63,18 @@ void SetButtonByColorSDL(Button* button, SDL_Rect rect) {
     button->buttonBackGround.h = rect.h;
 }
 
+void SetColorByValue(SDL_Color* color, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    color->r = r;
+    color->g = g;
+    color->b = b;
+    color->a = a;
+}
+
+void SetButtonTextPositionsByValue(Button* button, int x, int y, int w, int h) {
+    button->buttonText.x = x;
+    button->buttonText.y = y;
+    button->buttonText.h = h;
+    button->buttonText.w = w;
+}
+
 

@@ -65,3 +65,7 @@ int ClickedInside(const MouseCoordinate mouse, const Button button);
 /// @param button Button the to be changed
 /// @param rect Rectangle whose atributes will be copied to button
 void SetButtonByColorSDL(Button* button, SDL_Rect rect);
+
+void SetColorByValue(SDL_Color* color, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
+void SetButtonTextPositionsByValue(Button* button, int x, int y, int w, int h);

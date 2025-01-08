@@ -1,4 +1,5 @@
-#include "game.h"
+#include "game.h" 
+
 
 
 SDL_Color gameColors[4] = {
@@ -25,6 +26,7 @@ SDL_Rect gameButtonsBackground[4] = {
 int InitGame(Game* game) {
 
     game->gameButtonsSize = 0;
+    game->gameLogicState = GameLogicState_None;
 
     // The idea in the game is basically have buttons for colors. By now, we will choose 4,
     // but in the future, the idea is to have some kind of dificulty in it.
@@ -48,14 +50,22 @@ int InitGame(Game* game) {
 
     // score button
     SetButton(&game->scoreButton, "Score: ");
-    SetButtonBackGroundPositions(&game->scoreButton, 1000, 500, 150, 75);
+    SetButtonBackGroundPositions(&game->scoreButton, 1000, 500, 250, 125);
     SetButtonTextPositions(&game->scoreButton);
-    game->scoreButtonColor.r = 0;
-    game->scoreButtonColor.g = 0;
-    game->scoreButtonColor.b = 0;
-    game->scoreButtonColor.a = 255;
+    SetColorByValue(&game->scoreButtonColor, 120, 120, 120, 255);
+    // game->scoreButtonColor.r = 120;
+    // game->scoreButtonColor.g = 120;
+    // game->scoreButtonColor.b = 120;
+    // game->scoreButtonColor.a = 255;
+
+    // set game logic state button
+    SetButton(&game->gameLogicStateButton, "State");
+    SetButtonBackGroundPositions(&game->gameLogicStateButton, 1000, 250, 250, 125);
+    SetButtonTextPositionsByValue(&game->gameLogicStateButton, 1010, 240, 220, 100);
+    SetColorByValue(&game->gameLogicStateButtonColor, 222, 129, 180, 255);
 
     game->score = 0;
+    game->attemptHits = 0;
 
     // Set stack to zero
     game->stackSize = 0;
@@ -69,6 +79,11 @@ int InitGame(Game* game) {
 }
 
 void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font) {
+
+    if (game->gameLogicState == GameLogicState_GameOver) {
+        RenderGameOverScreen(renderer, mouse, game, font);
+        return;
+    }
 
     SDL_SetRenderDrawColor(renderer, 188, 188, 188, 255); // set background to gray
 
@@ -86,12 +101,24 @@ void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game*
 
 
     char scoreText [40];
+    char gameLogicStateText[40];
 
     sprintf(scoreText, "Score: %d", game->score);
 
     // show score at some side
     SetButton(&game->scoreButton, scoreText);
     RenderButton(renderer, font, &game->scoreButton, game->scoreButtonColor);
+
+    // show game logic state
+    if (game->gameLogicState == GameLogicState_Filling) {
+        strcpy(gameLogicStateText, "Hit the squares!!");
+    } else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_None) {
+        strcpy(gameLogicStateText, "Try to guess it!!");
+    }
+
+    SetButton(&game->gameLogicStateButton, gameLogicStateText);
+    RenderButton(renderer, font, &game->gameLogicStateButton, game->scoreButtonColor);
+
 
     SDL_RenderPresent(renderer);
 
@@ -100,29 +127,75 @@ void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game*
 
 void ProcessGameLogic(Game* game, const MouseCoordinate mouse) {
 
-    int hit = false;
-    
-    // First, we need to check if the click was inside some of the squares
+    int hit = 0; // 1 if hit the square, 0, if don't
+    int i;
 
-    for (int i = 0; i < game->gameButtonsSize; i++) {
+    // Setting state for the first time
+    if (game->gameLogicState == GameLogicState_None) game->gameLogicState = GameLogicState_Filling;
+
+    printf("---------------------------------------------------------------\n");
+    printf("LOGIC STATE: %d\n", game->gameLogicState);
+    printf("STACK SIZE: %d\n", game->memoryQueue.size);
+
+    // Check through map if square was hit
+    for (i = 0; i < game->gameButtonsSize; i++) {
 
         GameButtonsMap currentMap = game->map[i];
 
         if (HasHitSquare(mouse, currentMap) == true) {
-
             hit = true;
-            Enqueue(&game->memoryQueue, &game->map[i]);
-            game->score++;
-
-        } 
+            break;
+        }
 
     }
 
-    printf("SIZE: %d\n", game->memoryQueue.size);
+    if (hit == 0) printf("DID NOT FIND SMTH\n");
 
-    if (hit == false) printf("not hit\n");
 
-    else printf("HITHITHITHTIHTITHITHI\n");
+
+    if (hit == true) {
+
+        if (game->gameLogicState == GameLogicState_Filling) {
+            Enqueue(&game->memoryQueue, &game->map[i]);
+            game->gameLogicState = GameLogicState_Guessing;
+            return;
+        }
+
+        else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_Awaiting) {
+
+            // checking if it was the right square
+            if (CheckMapInQueue(game->memoryQueue, game->map[i], game->memoryQueue.size)) {
+                if (game->gameLogicState == GameLogicState_Guessing) {
+                    game->score++;
+                }
+
+                if (game->memoryQueue.size == game->score)
+                    game->gameLogicState = GameLogicState_Filling; // goes back to filling the stack
+
+            } else {
+                printf("YOU LOST\n");
+                game->gameLogicState = GameLogicState_GameOver;
+            }
+
+        }
+
+
+    }
+
+    // else {
+
+    //     if (game->gameLogicState == GameLogicState_Guessing || 
+    //         game->gameLogicState == GameLogicState_Awaiting) {
+
+    //             // display game over
+    //             printf("YOU LGOST!!\n");
+    //             game->gameLogicState = GameLogicState_GameOver;
+
+    //     }
+
+    // }
+
+    
 
     
 }
@@ -137,6 +210,7 @@ int HasHitSquare(const MouseCoordinate mouse, GameButtonsMap map) {
         }
 
 
+    printf("OUTSIDE\n");
     return 0;
 }
 
@@ -168,9 +242,50 @@ void Enqueue(MemoryQueue* queue, GameButtonsMap* map) {
 
 
 void ResetGame(Game* game) {
-
+    memset(&game->memoryQueue, 0, sizeof(game->memoryQueue));
     game->score = 0;
+    game->attemptHits = 0;
+}
 
+int CheckMapInQueue(MemoryQueue queue, GameButtonsMap map, int stackSize) {
+
+    GameButtonsMap* iterator = queue.first;
+    int i = 0;
+    printf("STACK SIZE-%s : %d\n", __func__ ,stackSize);
+
+    while (i < stackSize) {
+
+        printf("ITERATOR: %d\n", i);
+        printf("R: %d G: %d B: %d A: %d\n", iterator->color.r, iterator->color.g, iterator->color.b, iterator->color.a);
+        printf("MAP\n");
+        printf("R: %d G: %d B: %d A: %d\n", map.color.r, map.color.g, map.color.b, map.color.a);
+        
+
+        if (ColorsAreEqual(iterator->color, map.color) == true) {
+            printf("SQUARE HIT WAS INSIDE THE QUEUE\n");
+            return 1;
+        }
+
+        i++;
+
+    }
+
+    printf("SQUARE WAS NOT PART OF THE QUEUE\n");
+
+    return 0;
+}
+
+int ColorsAreEqual(SDL_Color color1, SDL_Color color2) {
+    return ( (color1.r = color2.r) && (color1.g == color2.g) && (color1.b == color2.b) && (color1.a = color2.a) );
+}
+
+void RenderGameOverScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font) {
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+    SDL_RenderClear(renderer);
+
+    SDL_RenderPresent(renderer);
 
 }
 

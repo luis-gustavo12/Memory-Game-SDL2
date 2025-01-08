@@ -19,6 +19,16 @@
 #include "states.h"
 
 
+typedef enum {
+    GameLogicState_None,     /* Neutral state */
+    GameLogicState_Guessing, /* State where you'll be trying to guess the squares you've hit on the past*/
+    GameLogicState_Filling,  /* State where you'll be clicking on the squares and putting them on the queue */
+    GameLogicState_Awaiting, /* A substate of guessing, when you expect the user to guess the other square */
+    GameLogicState_GameOver,
+} GameLogicState;
+
+
+
 
 /// @brief This is the map that holds a color as one key, and a button the value
 typedef struct GameButtonsMap {
@@ -54,11 +64,21 @@ typedef struct Game {
     SDL_Color scoreButtonColor;
     MemoryQueue memoryQueue;
     int stackSize;
+    GameLogicState gameLogicState;
+    Button gameLogicStateButton;
+    SDL_Color gameLogicStateButtonColor;
+    int attemptHits; // For every time in guessing state, we need to mark how many of the attemps it hit
 
 } Game;
 
 
+typedef struct GameOver {
 
+    Button tryAgainButton;
+    Button exitButton;
+
+
+} GameOver;
 
 
 
@@ -90,3 +110,9 @@ void Enqueue(MemoryQueue* queue, GameButtonsMap* map);
 /* QUEUE RELATED OPERATIONS -> END*/
 
 void ResetGame(Game* game);
+
+int CheckMapInQueue(MemoryQueue queue, GameButtonsMap map, int stackSize);
+
+int ColorsAreEqual(SDL_Color color1, SDL_Color color2);
+
+void RenderGameOverScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font);
