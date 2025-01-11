@@ -20,7 +20,9 @@ SDL_Rect gameButtonsBackground[4] = {
 
 };
 
-
+char colorsArray [4] [20] = {
+    {"Red"}, {"Blue"}, {"Yellow"}, {"Green"}
+};
 
 
 int InitGame(Game* game) {
@@ -45,6 +47,7 @@ int InitGame(Game* game) {
         game->map[i].color = gameColors[i];
         game->map[i].rectangle = gameButtonsBackground[i];
         game->gameButtonsSize++;
+        SetButtonName(&btn, colorsArray[i]);
 
     }
 

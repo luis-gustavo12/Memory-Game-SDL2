@@ -77,4 +77,6 @@ void SetButtonTextPositionsByValue(Button* button, int x, int y, int w, int h) {
     button->buttonText.w = w;
 }
 
-
+void SetButtonName(Button *button, char *name) {
+    strcpy(button->name, name);
+}

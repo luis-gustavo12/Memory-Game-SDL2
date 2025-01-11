@@ -24,6 +24,7 @@ typedef struct Button {
     SDL_Rect buttonBackGround;
     SDL_Rect buttonText;
     char text[128];
+    char name[128]; // A name for what the buttons represent. Ideally for the squares on the game
 
 } Button;
 
@@ -69,3 +70,5 @@ void SetButtonByColorSDL(Button* button, SDL_Rect rect);
 void SetColorByValue(SDL_Color* color, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
 void SetButtonTextPositionsByValue(Button* button, int x, int y, int w, int h);
+
+void SetButtonName(Button* button, char* name);

@@ -13,7 +13,7 @@
 #include "states.h"
 
 // defines
-#define PRINT_ERROR_MSG printf("ERROR %d: [%s]\n", __LINE__ ,SDL_GetError())
+#define PRINT_ERROR_MSG printf("ERROR %d: [%s]\n", __LINE__ , SDL_GetError())
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
