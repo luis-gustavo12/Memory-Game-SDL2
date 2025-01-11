@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#ifdef LINUX
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#endif
 #include "input.h"
 #include "display.h"
 #include "menu.h"
@@ -22,17 +24,6 @@
 // structs
 
 
-
-// typedef enum InputType {
-//     EMPTY,
-//     KEYBOARD,
-//     MOUSE
-// } InputType;
-
-// typedef enum States {
-//     MENU,
-//     GAME
-// } States;
 
 
 

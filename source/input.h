@@ -10,8 +10,9 @@
 
 #pragma once
 
-
+#ifdef LINUX
 #include <SDL2/SDL.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include "states.h"
