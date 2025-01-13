@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/MEMORY_GAME.dir/source/display.c.o CMakeFiles/MEMORY_GAME.dir/source/game.c.o CMakeFiles/MEMORY_GAME.dir/source/input.c.o CMakeFiles/MEMORY_GAME.dir/source/main.c.o CMakeFiles/MEMORY_GAME.dir/source/menu.c.o CMakeFiles/MEMORY_GAME.dir/source/states.c.o -o MEMORY_GAME  /usr/lib/x86_64-linux-gnu/libSDL2.so /usr/lib/x86_64-linux-gnu/libSDL2_ttf.so 

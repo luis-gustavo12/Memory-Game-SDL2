@@ -1,3 +1,0 @@
-/home/starc/Desktop/__coding__/memory_game_sdl/Memory-Game-SDL2/build/CMakeFiles/MEMORY_GAME.dir
-/home/starc/Desktop/__coding__/memory_game_sdl/Memory-Game-SDL2/build/CMakeFiles/edit_cache.dir
-/home/starc/Desktop/__coding__/memory_game_sdl/Memory-Game-SDL2/build/CMakeFiles/rebuild_cache.dir
