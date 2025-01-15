@@ -12,10 +12,16 @@ find_package(SDL2_ttf REQUIRED)
 
 add_executable( ${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2_ttf::SDL2_ttf)
+
 
 if(WIN32)
+
+    target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2_ttf::SDL2_ttf SDL2::SDL2main)
+
     target_compile_definitions(${PROJECT_NAME} PRIVATE WINDOWS)
 elseif(UNIX)
+
+    target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2_ttf::SDL2_ttf)
+
     target_compile_definitions(${PROJECT_NAME} PRIVATE LINUX)
 endif()

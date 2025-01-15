@@ -67,8 +67,11 @@ int gameButtonsSize;
 /// @return 1 for sucess, 0 or -1 for error
 int InitExternalMedia() {
 
+#ifdef LINUX
     font = TTF_OpenFont("../media/fonts/OpenSans.ttf", 24);
-
+#elif WINDOWS
+    font = TTF_OpenFont("..\\..\\..\\media\\fonts\\OpenSans.ttf", 24);
+#endif
     if (!font) {
         return -1;
     }
