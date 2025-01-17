@@ -28,7 +28,13 @@ typedef struct Button {
 
 } Button;
 
+typedef struct GameOverScreen {
 
+    Button playAgainButton;
+    Button exitButton;
+
+
+}GameOverScreen;
 
 
 /// @brief Sets the button a text

@@ -76,6 +76,13 @@ int InitGame(Game* game) {
     game->memoryQueue.first = NULL;
     game->memoryQueue.last = NULL;
     game->memoryQueue.size = 0;
+
+    // start game over buttons
+    SetButton(&game->gameOver.exitButton, "Exit");
+    SetButtonBackGroundPositions(&game->gameOver.exitButton, 250, 250, 500, 500);
+    SetButtonTextPositionsByValue(&game->gameOver.exitButton, 260, 240, 480, 450);
+    SetColorByValue(&game->gameOver.exitButton, 222, 129, 180, 255);
+    
     
 
     return 1;
@@ -83,47 +90,99 @@ int InitGame(Game* game) {
 
 void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font) {
 
-    if (game->gameLogicState == GameLogicState_GameOver) {
+
+    switch (game->gameLogicState) {
+
+    case GameLogicState_GameOver:
         RenderGameOverScreen(renderer, mouse, game, font);
-        return;
+        break;
+
+
+    default: {
+
+        SDL_SetRenderDrawColor(renderer, 188, 188, 188, 255); // set background to gray
+
+        SDL_RenderClear(renderer);
+
+        for (int i = 0; i < game->gameButtonsSize; i++) {
+
+            SDL_Rect copy = game->gameButtons[i].buttonBackGround;
+
+            SDL_SetRenderDrawColor(renderer, game->map[i].color.r, game->map[i].color.g,
+                game->map[i].color.b, game->map[i].color.a);
+            SDL_RenderFillRect(renderer, &copy);
+
+        }
+
+
+        char scoreText[40];
+        char gameLogicStateText[40];
+
+        sprintf(scoreText, "Score: %d", game->score);
+
+        // show score at some side
+        SetButton(&game->scoreButton, scoreText);
+        RenderButton(renderer, font, &game->scoreButton, game->scoreButtonColor);
+
+        // show game logic state
+        if (game->gameLogicState == GameLogicState_Filling) {
+            strcpy(gameLogicStateText, "Hit the squares!!");
+        }
+        else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_None) {
+            strcpy(gameLogicStateText, "Try to guess it!!");
+        }
+
+        SetButton(&game->gameLogicStateButton, gameLogicStateText);
+        RenderButton(renderer, font, &game->gameLogicStateButton, game->scoreButtonColor);
+
+
+        SDL_RenderPresent(renderer);
+
+
+        break;
     }
 
-    SDL_SetRenderDrawColor(renderer, 188, 188, 188, 255); // set background to gray
-
-    SDL_RenderClear(renderer);
-
-    for (int i = 0; i < game->gameButtonsSize; i++) {
-
-        SDL_Rect copy = game->gameButtons[i].buttonBackGround;
-
-        SDL_SetRenderDrawColor(renderer, game->map[i].color.r, game->map[i].color.g, 
-            game->map[i].color.b, game->map[i].color.a);
-        SDL_RenderFillRect(renderer, &copy);
-
+      
     }
+    
 
 
-    char scoreText [40];
-    char gameLogicStateText[40];
+    //SDL_SetRenderDrawColor(renderer, 188, 188, 188, 255); // set background to gray
 
-    sprintf(scoreText, "Score: %d", game->score);
+    //SDL_RenderClear(renderer);
 
-    // show score at some side
-    SetButton(&game->scoreButton, scoreText);
-    RenderButton(renderer, font, &game->scoreButton, game->scoreButtonColor);
+    //for (int i = 0; i < game->gameButtonsSize; i++) {
 
-    // show game logic state
-    if (game->gameLogicState == GameLogicState_Filling) {
-        strcpy(gameLogicStateText, "Hit the squares!!");
-    } else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_None) {
-        strcpy(gameLogicStateText, "Try to guess it!!");
-    }
+    //    SDL_Rect copy = game->gameButtons[i].buttonBackGround;
 
-    SetButton(&game->gameLogicStateButton, gameLogicStateText);
-    RenderButton(renderer, font, &game->gameLogicStateButton, game->scoreButtonColor);
+    //    SDL_SetRenderDrawColor(renderer, game->map[i].color.r, game->map[i].color.g, 
+    //        game->map[i].color.b, game->map[i].color.a);
+    //    SDL_RenderFillRect(renderer, &copy);
+
+    //}
 
 
-    SDL_RenderPresent(renderer);
+    //char scoreText [40];
+    //char gameLogicStateText[40];
+
+    //sprintf(scoreText, "Score: %d", game->score);
+
+    //// show score at some side
+    //SetButton(&game->scoreButton, scoreText);
+    //RenderButton(renderer, font, &game->scoreButton, game->scoreButtonColor);
+
+    //// show game logic state
+    //if (game->gameLogicState == GameLogicState_Filling) {
+    //    strcpy(gameLogicStateText, "Hit the squares!!");
+    //} else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_None) {
+    //    strcpy(gameLogicStateText, "Try to guess it!!");
+    //}
+
+    //SetButton(&game->gameLogicStateButton, gameLogicStateText);
+    //RenderButton(renderer, font, &game->gameLogicStateButton, game->scoreButtonColor);
+
+
+    //SDL_RenderPresent(renderer);
 
 
 }
@@ -151,8 +210,6 @@ void ProcessGameLogic(Game* game, const MouseCoordinate mouse) {
         }
 
     }
-
-    if (hit == 0) printf("DID NOT FIND SMTH\n");
 
 
 
@@ -184,19 +241,6 @@ void ProcessGameLogic(Game* game, const MouseCoordinate mouse) {
 
 
     }
-
-    // else {
-
-    //     if (game->gameLogicState == GameLogicState_Guessing || 
-    //         game->gameLogicState == GameLogicState_Awaiting) {
-
-    //             // display game over
-    //             printf("YOU LGOST!!\n");
-    //             game->gameLogicState = GameLogicState_GameOver;
-
-    //     }
-
-    // }
 
     
 
@@ -284,9 +328,16 @@ int ColorsAreEqual(SDL_Color color1, SDL_Color color2) {
 
 void RenderGameOverScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font) {
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 153, 224, 88);
 
     SDL_RenderClear(renderer);
+
+    SDL_Color color;
+
+    SetColorByValue(&color, 126, 214, 184, 84);
+
+    RenderButton(renderer, font, &game->gameOver.exitButton, color);
+
 
     SDL_RenderPresent(renderer);
 

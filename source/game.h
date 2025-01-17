@@ -68,17 +68,11 @@ typedef struct Game {
     Button gameLogicStateButton;
     SDL_Color gameLogicStateButtonColor;
     int attemptHits; // For every time in guessing state, we need to mark how many of the attemps it hit
+    GameOverScreen gameOver;
 
 } Game;
 
 
-typedef struct GameOver {
-
-    Button tryAgainButton;
-    Button exitButton;
-
-
-} GameOver;
 
 
 
