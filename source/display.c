@@ -30,6 +30,7 @@ void RenderButton(SDL_Renderer* renderer, TTF_Font* font, Button* button, SDL_Co
     SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255); // set background to purple
     SDL_RenderFillRect(renderer, &button->buttonBackGround);
 
+    SDL_RenderPresent(renderer);
 
     SDL_Surface* surface = TTF_RenderText_Solid(font, button->text, color);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -39,6 +40,8 @@ void RenderButton(SDL_Renderer* renderer, TTF_Font* font, Button* button, SDL_Co
     }
 
     SDL_RenderCopy(renderer, texture, NULL, &button->buttonText);
+
+    SDL_RenderPresent(renderer);
 
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
@@ -79,4 +82,40 @@ void SetButtonTextPositionsByValue(Button* button, int x, int y, int w, int h) {
 
 void SetButtonName(Button *button, char *name) {
     strcpy(button->name, name);
+}
+
+void SetButtonBackgroundColorByValue(Button* button, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    button->colorButtonBackground.r = r;
+    button->colorButtonBackground.g = g;
+    button->colorButtonBackground.b = b;
+    button->colorButtonBackground.a = a;
+}
+
+void RenderButtonEx(SDL_Renderer* renderer, TTF_Font* font, Button* button) {
+    
+    SDL_Color desiredColor = button->colorButtonBackground;
+    
+    SDL_SetRenderDrawColor(renderer, desiredColor.r, desiredColor.g, desiredColor.b, desiredColor.a); // set background to desired color
+    SDL_RenderFillRect(renderer, &button->buttonBackGround);
+
+    SDL_Color bgColor = {0, 0, 0, 255 };
+
+    SDL_Surface* surface = TTF_RenderText_Solid(font, button->text, bgColor);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    if (!surface || !texture) {
+        return;
+    }
+
+    SDL_RenderCopy(renderer, texture, NULL, &button->buttonText);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
+void SetButtonTextColorByValue(Button* button, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    button->colorButtonText.r = r;
+    button->colorButtonText.b = b;
+    button->colorButtonText.g = g;
+    button->colorButtonText.a = a;
 }

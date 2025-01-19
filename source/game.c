@@ -79,10 +79,11 @@ int InitGame(Game* game) {
 
     // start game over buttons
     SetButton(&game->gameOver.exitButton, "Exit");
-    SetButtonBackGroundPositions(&game->gameOver.exitButton, 250, 250, 500, 500);
-    SetButtonTextPositionsByValue(&game->gameOver.exitButton, 260, 240, 480, 450);
-    SetColorByValue(&game->gameOver.exitButton, 222, 129, 180, 255);
-    
+    SetButtonBackGroundPositions(&game->gameOver.exitButton, 0, 0, 350, 150);
+    SetButtonTextPositionsByValue(&game->gameOver.exitButton, 0, 0, 350, 150);
+    SetColorByValue(&game->gameOver.exitButton.colorButtonBackground, 222, 129, 180, 255);
+    SetButtonBackgroundColorByValue(&game->gameOver.exitButton, 136, 71, 199, 250);
+
     
 
     return 1;
@@ -146,43 +147,6 @@ void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game*
     }
     
 
-
-    //SDL_SetRenderDrawColor(renderer, 188, 188, 188, 255); // set background to gray
-
-    //SDL_RenderClear(renderer);
-
-    //for (int i = 0; i < game->gameButtonsSize; i++) {
-
-    //    SDL_Rect copy = game->gameButtons[i].buttonBackGround;
-
-    //    SDL_SetRenderDrawColor(renderer, game->map[i].color.r, game->map[i].color.g, 
-    //        game->map[i].color.b, game->map[i].color.a);
-    //    SDL_RenderFillRect(renderer, &copy);
-
-    //}
-
-
-    //char scoreText [40];
-    //char gameLogicStateText[40];
-
-    //sprintf(scoreText, "Score: %d", game->score);
-
-    //// show score at some side
-    //SetButton(&game->scoreButton, scoreText);
-    //RenderButton(renderer, font, &game->scoreButton, game->scoreButtonColor);
-
-    //// show game logic state
-    //if (game->gameLogicState == GameLogicState_Filling) {
-    //    strcpy(gameLogicStateText, "Hit the squares!!");
-    //} else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_None) {
-    //    strcpy(gameLogicStateText, "Try to guess it!!");
-    //}
-
-    //SetButton(&game->gameLogicStateButton, gameLogicStateText);
-    //RenderButton(renderer, font, &game->gameLogicStateButton, game->scoreButtonColor);
-
-
-    //SDL_RenderPresent(renderer);
 
 
 }
@@ -332,11 +296,16 @@ void RenderGameOverScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, G
 
     SDL_RenderClear(renderer);
 
-    SDL_Color color;
+    SDL_Color color = game->gameOver.exitButton.colorButtonBackground;
 
-    SetColorByValue(&color, 126, 214, 184, 84);
+    RenderButtonEx(renderer, font, &game->gameOver.exitButton);
 
-    RenderButton(renderer, font, &game->gameOver.exitButton, color);
+    //SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255);
+
+    //SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    //SDL_RenderFillRect(renderer, &game->gameOver.exitButton.buttonBackGround);
+    
 
 
     SDL_RenderPresent(renderer);

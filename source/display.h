@@ -23,6 +23,8 @@ typedef struct Button {
 
     SDL_Rect buttonBackGround;
     SDL_Rect buttonText;
+    SDL_Color colorButtonBackground;
+    SDL_Color colorButtonText;
     char text[128];
     char name[128]; // A name for what the buttons represent. Ideally for the squares on the game
 
@@ -73,8 +75,24 @@ int ClickedInside(const MouseCoordinate mouse, const Button button);
 /// @param rect Rectangle whose atributes will be copied to button
 void SetButtonByColorSDL(Button* button, SDL_Rect rect);
 
+/// @brief Set SDL_Color object given rgb
+/// @param color 
 void SetColorByValue(SDL_Color* color, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
+/// @brief Set The text of the button positions given the coordinates
 void SetButtonTextPositionsByValue(Button* button, int x, int y, int w, int h);
 
+/// @brief Set a name for the button, kind of a secondary text
+/// @param button the button object
 void SetButtonName(Button* button, char* name);
+
+/// @brief Set the color of the background, given rgba values
+/// @param button the button object
+void SetButtonBackgroundColorByValue(Button* button, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
+/// @brief Render button on the screen given the coordinates
+/// @param renderer the rendering context
+void RenderButtonEx(SDL_Renderer* renderer, TTF_Font* font, Button* button);
+
+/// @brief Set the color of the text given its value
+void SetButtonTextColorByValue(Button* button, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
