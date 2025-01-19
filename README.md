@@ -45,3 +45,13 @@ On Linux, go to build folder
 ### New
 - Added CMake configuration, and adapted paths to recognize paths through different OSs
 
+
+## [1.10] -> 18 / Jan / 2025
+
+## EFix
+
+- Fixed exit button display
+
+### New
+
+- Added atribute background to bottons
