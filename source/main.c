@@ -10,7 +10,7 @@ int txtWidth, txtHeight;
 SDL_Rect rect;
 GameMenu menu = {{153, 153, 153, 255}};
 Game game;
-MouseCoordinate mouse; // this gets the current x and y coordinates when there's a click
+//MouseCoordinate mouse; // this gets the current x and y coordinates when there's a click
 bool enteredMenu = false;
 
 
@@ -106,11 +106,10 @@ int main(int argc, char* argv[]) {
     if (InitExternalMedia() <= 0) return CleanAndExit();
 
     InitMenuButtons(&startGameButton, &exitButton);
-    int gameButtonsSize;
     if (InitGame(&game) != 1) return CleanAndExit();
 
     running = true;
-    gameState = MENU;
+    game.gameState = States_MENU;
     bool skip = 0;
     InputType inputType = EMPTY;
 
@@ -133,12 +132,12 @@ int main(int argc, char* argv[]) {
                 printf("SDL_MOUSEBUTTONDOWN X: %d Y: %d\n",
                     ev.button.x, ev.button.y);
                 inputType = MOUSE;
-                ProcessMouseInput(&ev, &mouse);
+                ProcessMouseInput(&ev, &game);
                 break;
 
             case SDL_KEYDOWN:
                 inputType = KEYBOARD;
-                if (ProcessKeyboardInput(&ev) == false) {
+                if (ProcessKeyboardInput(&ev, &game) == false) {
                     running = false;
                     skip = true;
                 }
@@ -158,8 +157,8 @@ int main(int argc, char* argv[]) {
         }
 
 
-        switch (gameState) {
-        case MENU: {
+        switch (game.gameState) {
+        case States_MENU: {
 
 
             // set background color to green -> 115, 214, 71
@@ -178,13 +177,13 @@ int main(int argc, char* argv[]) {
             // mark this as TODO: 
 
             if (inputType == MOUSE) {
-                if (  ClickedInside(mouse, startGameButton) ) {
-                    gameState = GAME;
+                if (  ClickedInside(&game, startGameButton) ) {
+                    game.gameState = States_GAME;
                     break;
                 } 
 
 
-                if (ClickedInside(mouse, exitButton) ) {
+                if (ClickedInside(&game, exitButton) ) {
                     running = false;
                     break;
                 }
@@ -197,7 +196,7 @@ int main(int argc, char* argv[]) {
 
         } // case MENU
         
-        case GAME: {
+        case States_GAME: {
 
             // this is the variable marker that checks if the game is going to be clicked
             // for a second time, since whenever you go into the game, you need to reboot it
@@ -206,9 +205,9 @@ int main(int argc, char* argv[]) {
                 enteredMenu = false;
             }
 
-            RenderGameScreen(mainRenderer, mouse, &game, font);
+            RenderGameScreen(mainRenderer, &game, font);
 
-            if (inputType == MOUSE) ProcessGameLogic(&game, mouse);
+            if (inputType == MOUSE) ProcessGameLogic(&game);
 
             break;
 
@@ -220,8 +219,8 @@ int main(int argc, char* argv[]) {
 
         
         if (inputType == MOUSE) {
-            mouse.xClick = -1;
-            mouse.yClick = -1;
+            game.mouseCoordinate.xClick = -1;
+            game.mouseCoordinate.yClick = -1;
         }
 
         inputType = EMPTY;

@@ -89,8 +89,9 @@ int InitGame(Game* game) {
     return 1;
 }
 
-void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font) {
+void RenderGameScreen(SDL_Renderer* renderer, Game* game, TTF_Font* font) {
 
+    MouseCoordinate mouse = game->mouseCoordinate;
 
     switch (game->gameLogicState) {
 
@@ -151,10 +152,11 @@ void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game*
 
 }
 
-void ProcessGameLogic(Game* game, const MouseCoordinate mouse) {
+void ProcessGameLogic(Game* game) {
 
     int hit = 0; // 1 if hit the square, 0, if don't
     int i;
+    MouseCoordinate mouse = game->mouseCoordinate;
 
     // Setting state for the first time
     if (game->gameLogicState == GameLogicState_None) game->gameLogicState = GameLogicState_Filling;
@@ -312,3 +314,14 @@ void RenderGameOverScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, G
 
 }
 
+int ClickedInside(Game* game, const Button button) {
+
+    SDL_Rect rect = button.buttonBackGround;
+    MouseCoordinate mouse = game->mouseCoordinate;
+
+    rect.h += rect.y;
+    rect.w += rect.x;
+
+    return ((mouse.xClick >= rect.x && mouse.yClick >= rect.y) && (mouse.yClick <= rect.h && mouse.xClick <= rect.w));
+
+}

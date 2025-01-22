@@ -4,7 +4,8 @@ project(MEMORY_GAME C)
 
 set(CMAKE_C_STANDARD 11)
 
-file(GLOB SOURCES "source/*.c")
+#file(GLOB SOURCES "source/*.c")
+aux_source_directory(source SOURCES)
 
 find_package(SDL2 REQUIRED)
 

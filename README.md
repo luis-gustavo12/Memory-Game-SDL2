@@ -48,10 +48,17 @@ On Linux, go to build folder
 
 ## [1.10] -> 18 / Jan / 2025
 
-## EFix
+## Fix
 
 - Fixed exit button display
 
 ### New
 
-- Added atribute background to bottons
+- Added attribute background to buttons
+
+## [1.10] -> 22 / Jan / 2025
+
+## Fix
+
+- Fixed circular inclusion prone design
+- Added refactoring for game main module

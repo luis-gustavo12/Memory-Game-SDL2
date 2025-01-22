@@ -30,8 +30,6 @@ void RenderButton(SDL_Renderer* renderer, TTF_Font* font, Button* button, SDL_Co
     SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255); // set background to purple
     SDL_RenderFillRect(renderer, &button->buttonBackGround);
 
-    SDL_RenderPresent(renderer);
-
     SDL_Surface* surface = TTF_RenderText_Solid(font, button->text, color);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
@@ -48,16 +46,7 @@ void RenderButton(SDL_Renderer* renderer, TTF_Font* font, Button* button, SDL_Co
 
 }
 
-int ClickedInside(const MouseCoordinate mouse, const Button button) {
-    
-    SDL_Rect rect = button.buttonBackGround;
 
-    rect.h += rect.y;
-    rect.w += rect.x;
-
-    return ( ( mouse.xClick >= rect.x && mouse.yClick >= rect.y ) && ( mouse.yClick <= rect.h && mouse.xClick <= rect.w ) );
-
-}
 
 void SetButtonByColorSDL(Button* button, SDL_Rect rect) {
     button->buttonBackGround.x = rect.x;

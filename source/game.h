@@ -13,10 +13,8 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
+#include "stdbool.h"
 #include "display.h"
-#include "input.h"
-#include "main.h"
-#include "states.h"
 
 
 typedef enum {
@@ -27,8 +25,19 @@ typedef enum {
     GameLogicState_GameOver,
 } GameLogicState;
 
+typedef struct GameOverScreen {
+
+    Button playAgainButton;
+    Button exitButton;
 
 
+}GameOverScreen;
+
+
+typedef struct {
+    int xClick;
+    int yClick;
+} MouseCoordinate;
 
 /// @brief This is the map that holds a color as one key, and a button the value
 typedef struct GameButtonsMap {
@@ -52,6 +61,11 @@ typedef struct MemoryQueue {
 
 } MemoryQueue;
 
+typedef enum {
+    States_MENU,
+    States_GAME
+} States;
+
 typedef struct Game {
 
     // GRAPHICAL
@@ -64,11 +78,13 @@ typedef struct Game {
     SDL_Color scoreButtonColor;
     MemoryQueue memoryQueue;
     int stackSize;
+    States gameState;
     GameLogicState gameLogicState;
     Button gameLogicStateButton;
     SDL_Color gameLogicStateButtonColor;
     int attemptHits; // For every time in guessing state, we need to mark how many of the attemps it hit
     GameOverScreen gameOver;
+    MouseCoordinate mouseCoordinate;
 
 } Game;
 
@@ -87,9 +103,9 @@ int InitGame(Game* game);
 /// @param mouse The X and Y mouse Coordinates
 /// @param game Game struct
 /// @param font The font. Needed for displaying the score
-void RenderGameScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font);
+void RenderGameScreen(SDL_Renderer* renderer, Game* game, TTF_Font* font);
 
-void ProcessGameLogic(Game* game, const MouseCoordinate mouse);
+void ProcessGameLogic(Game* game);
 
 int HasHitSquare(const MouseCoordinate mouse, GameButtonsMap map);
 
@@ -110,3 +126,9 @@ int CheckMapInQueue(MemoryQueue queue, GameButtonsMap map, int stackSize);
 int ColorsAreEqual(SDL_Color color1, SDL_Color color2);
 
 void RenderGameOverScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, Game* game, TTF_Font* font);
+
+/// @brief Checks the click coordinates matches the button coordinates
+/// @param mouse The X and |Y mouse coordinates
+/// @param button The button which you want to check
+/// @return 1 if click was inside, 0 if click was outside
+int ClickedInside(Game* game, const Button button);

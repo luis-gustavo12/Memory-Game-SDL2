@@ -14,7 +14,8 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "states.h"
+#include "game.h"
+
 
 // structs
 
@@ -25,17 +26,14 @@ typedef enum InputType {
 } InputType;
 
 
-typedef struct {
-    int xClick;
-    int yClick;
-} MouseCoordinate;
+
 
 // variables
 
 
 // functions
 
-int ProcessKeyboardInput(SDL_Event* ev);
+int ProcessKeyboardInput(SDL_Event* ev, Game* game);
 
-int ProcessMouseInput(SDL_Event* ev, MouseCoordinate* mouse);
+int ProcessMouseInput(SDL_Event* ev, Game* game);
 

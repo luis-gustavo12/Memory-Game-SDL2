@@ -13,8 +13,6 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
-#include "input.h"
-#include "states.h"
 
 
 /// @brief Representation of a button on the screen, can be used anywhere as long as
@@ -30,13 +28,7 @@ typedef struct Button {
 
 } Button;
 
-typedef struct GameOverScreen {
 
-    Button playAgainButton;
-    Button exitButton;
-
-
-}GameOverScreen;
 
 
 /// @brief Sets the button a text
@@ -64,11 +56,7 @@ void SetButtonTextPositions(Button* button);
 /// @param color The color in which you want to pass
 void RenderButton(SDL_Renderer* renderer, TTF_Font* font, Button* button, SDL_Color color);
 
-/// @brief Checks the click coordinates matches the button coordinates
-/// @param mouse The X and |Y mouse coordinates
-/// @param button The button which you want to check
-/// @return 1 if click was inside, 0 if click was outside
-int ClickedInside(const MouseCoordinate mouse, const Button button);
+
 
 /// @brief Set buttons positions given a SDL rect
 /// @param button Button the to be changed
