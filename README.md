@@ -63,7 +63,7 @@ On Linux, go to build folder
 - Fixed circular inclusion prone design
 - Added refactoring for game main module
 
-## [1.10] -> 22 / Jan / 2025
+## [1.10] -> 25 / Jan / 2025
 
 ### New
 
