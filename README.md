@@ -46,7 +46,7 @@ On Linux, go to build folder
 - Added CMake configuration, and adapted paths to recognize paths through different OSs
 
 
-## [1.10] -> 18 / Jan / 2025
+## [1.11] -> 18 / Jan / 2025
 
 ## Fix
 
@@ -56,14 +56,14 @@ On Linux, go to build folder
 
 - Added attribute background to buttons
 
-## [1.10] -> 22 / Jan / 2025
+## [1.12] -> 22 / Jan / 2025
 
 ## Fix
 
 - Fixed circular inclusion prone design
 - Added refactoring for game main module
 
-## [1.10] -> 25 / Jan / 2025
+## [1.13] -> 25 / Jan / 2025
 
 ### New
 
