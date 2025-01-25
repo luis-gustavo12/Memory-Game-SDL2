@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
                 if (  ClickedInside(&game, startGameButton) ) {
                     game.gameState = States_GAME;
                     break;
-                } 
+                }
 
 
                 if (ClickedInside(&game, exitButton) ) {
@@ -212,6 +212,11 @@ int main(int argc, char* argv[]) {
             break;
 
         }
+
+        case States_EXIT:
+            running = false;
+            break;
+
 
         default:
             break;

@@ -16,6 +16,9 @@
 #include "stdbool.h"
 #include "display.h"
 
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 720
+
 
 typedef enum {
     GameLogicState_None,     /* Neutral state */
@@ -63,7 +66,8 @@ typedef struct MemoryQueue {
 
 typedef enum {
     States_MENU,
-    States_GAME
+    States_GAME,
+    States_EXIT,
 } States;
 
 typedef struct Game {
@@ -132,3 +136,7 @@ void RenderGameOverScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, G
 /// @param button The button which you want to check
 /// @return 1 if click was inside, 0 if click was outside
 int ClickedInside(Game* game, const Button button);
+
+void ProcessGameOver(Game* game);
+
+int HasHitButton(MouseCoordinate mouse, Button button);

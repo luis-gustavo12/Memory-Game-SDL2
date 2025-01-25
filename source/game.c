@@ -79,8 +79,8 @@ int InitGame(Game* game) {
 
     // start game over buttons
     SetButton(&game->gameOver.exitButton, "Exit");
-    SetButtonBackGroundPositions(&game->gameOver.exitButton, 0, 0, 350, 150);
-    SetButtonTextPositionsByValue(&game->gameOver.exitButton, 0, 0, 350, 150);
+    SetButtonBackGroundPositions(&game->gameOver.exitButton, 320, 180, 350, 150);
+    SetButtonTextPositionsByValue(&game->gameOver.exitButton, 320, 180, 350, 150);
     SetColorByValue(&game->gameOver.exitButton.colorButtonBackground, 222, 129, 180, 255);
     SetButtonBackgroundColorByValue(&game->gameOver.exitButton, 136, 71, 199, 250);
 
@@ -158,58 +158,70 @@ void ProcessGameLogic(Game* game) {
     int i;
     MouseCoordinate mouse = game->mouseCoordinate;
 
-    // Setting state for the first time
-    if (game->gameLogicState == GameLogicState_None) game->gameLogicState = GameLogicState_Filling;
-
-    printf("---------------------------------------------------------------\n");
-    printf("LOGIC STATE: %d\n", game->gameLogicState);
-    printf("STACK SIZE: %d\n", game->memoryQueue.size);
-
-    // Check through map if square was hit
-    for (i = 0; i < game->gameButtonsSize; i++) {
-
-        GameButtonsMap currentMap = game->map[i];
-
-        if (HasHitSquare(mouse, currentMap) == true) {
-            hit = true;
-            break;
-        }
-
+    switch (game->gameLogicState)
+    {
+    case GameLogicState_GameOver: {
+        ProcessGameOver(game);
+        break;
     }
 
+    default: {
+        // Setting state for the first time
+        if (game->gameLogicState == GameLogicState_None) game->gameLogicState = GameLogicState_Filling;
 
+        printf("---------------------------------------------------------------\n");
+        printf("LOGIC STATE: %d\n", game->gameLogicState);
+        printf("STACK SIZE: %d\n", game->memoryQueue.size);
 
-    if (hit == true) {
+        // Check through map if square was hit
+        for (i = 0; i < game->gameButtonsSize; i++) {
 
-        if (game->gameLogicState == GameLogicState_Filling) {
-            Enqueue(&game->memoryQueue, &game->map[i]);
-            game->gameLogicState = GameLogicState_Guessing;
-            return;
-        }
+            GameButtonsMap currentMap = game->map[i];
 
-        else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_Awaiting) {
-
-            // checking if it was the right square
-            if (CheckMapInQueue(game->memoryQueue, game->map[i], game->memoryQueue.size)) {
-                if (game->gameLogicState == GameLogicState_Guessing) {
-                    game->score++;
-                }
-
-                if (game->memoryQueue.size == game->score)
-                    game->gameLogicState = GameLogicState_Filling; // goes back to filling the stack
-
-            } else {
-                printf("YOU LOST\n");
-                game->gameLogicState = GameLogicState_GameOver;
+            if (HasHitSquare(mouse, currentMap) == true) {
+                hit = true;
+                break;
             }
 
         }
 
 
+
+        if (hit == true) {
+
+            if (game->gameLogicState == GameLogicState_Filling) {
+                Enqueue(&game->memoryQueue, &game->map[i]);
+                game->gameLogicState = GameLogicState_Guessing;
+                return;
+            }
+
+            else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_Awaiting) {
+
+                // checking if it was the right square
+                if (CheckMapInQueue(game->memoryQueue, game->map[i], game->memoryQueue.size)) {
+                    if (game->gameLogicState == GameLogicState_Guessing) {
+                        game->score++;
+                    }
+
+                    if (game->memoryQueue.size == game->score)
+                        game->gameLogicState = GameLogicState_Filling; // goes back to filling the stack
+
+                }
+                else {
+                    printf("YOU LOST\n");
+                    game->gameLogicState = GameLogicState_GameOver;
+                }
+
+            }
+
+
+        }
+
+        break;
     }
 
+    }
     
-
     
 }
 
@@ -323,5 +335,28 @@ int ClickedInside(Game* game, const Button button) {
     rect.w += rect.x;
 
     return ((mouse.xClick >= rect.x && mouse.yClick >= rect.y) && (mouse.yClick <= rect.h && mouse.xClick <= rect.w));
+
+}
+
+void ProcessGameOver(Game* game) {
+
+    int hit = false;
+
+    if (HasHitButton(game->mouseCoordinate, game->gameOver.exitButton)) {
+
+        printf("here\n");
+        game->gameState = States_EXIT;
+        hit = true;
+        return;
+
+    }
+
+}
+
+int HasHitButton(MouseCoordinate mouse, Button button) {
+
+    return ( (mouse.xClick >= button.buttonBackGround.x) && (mouse.xClick <= (button.buttonBackGround.x + button.buttonBackGround.w) ) ) &&
+           ( (mouse.yClick >= button.buttonBackGround.y) && (mouse.yClick <= (button.buttonBackGround.y + button.buttonBackGround.h) ) );
+
 
 }
