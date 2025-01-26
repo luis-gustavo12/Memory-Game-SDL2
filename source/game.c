@@ -79,11 +79,16 @@ int InitGame(Game* game) {
 
     // start game over buttons
     SetButton(&game->gameOver.exitButton, "Exit");
-    SetButtonBackGroundPositions(&game->gameOver.exitButton, 320, 180, 350, 150);
-    SetButtonTextPositionsByValue(&game->gameOver.exitButton, 320, 180, 350, 150);
+    SetButtonBackGroundPositions(&game->gameOver.exitButton, 320, 50, 350, 150);
+    SetButtonTextPositionsByValue(&game->gameOver.exitButton, 320, 50, 350, 150);
     SetColorByValue(&game->gameOver.exitButton.colorButtonBackground, 222, 129, 180, 255);
     SetButtonBackgroundColorByValue(&game->gameOver.exitButton, 136, 71, 199, 250);
 
+    SetButton(&game->gameOver.playAgainButton, "Play Again");
+    SetButtonBackGroundPositions(&game->gameOver.playAgainButton, 320, 350, 350, 150);
+    SetButtonTextPositionsByValue(&game->gameOver.playAgainButton, 320, 350, 350, 150);
+    SetColorByValue(&game->gameOver.playAgainButton.colorButtonBackground, 222, 129, 180, 255);
+    SetButtonBackgroundColorByValue(&game->gameOver.playAgainButton, 136, 71, 199, 250);
     
 
     return 1;
@@ -158,8 +163,7 @@ void ProcessGameLogic(Game* game) {
     int i;
     MouseCoordinate mouse = game->mouseCoordinate;
 
-    switch (game->gameLogicState)
-    {
+    switch (game->gameLogicState) {
     case GameLogicState_GameOver: {
         ProcessGameOver(game);
         break;
@@ -313,14 +317,8 @@ void RenderGameOverScreen(SDL_Renderer* renderer, const MouseCoordinate mouse, G
     SDL_Color color = game->gameOver.exitButton.colorButtonBackground;
 
     RenderButtonEx(renderer, font, &game->gameOver.exitButton);
-
-    //SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255);
-
-    //SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
-    //SDL_RenderFillRect(renderer, &game->gameOver.exitButton.buttonBackGround);
     
-
+    RenderButtonEx(renderer, font, &game->gameOver.playAgainButton);
 
     SDL_RenderPresent(renderer);
 
@@ -340,13 +338,18 @@ int ClickedInside(Game* game, const Button button) {
 
 void ProcessGameOver(Game* game) {
 
-    int hit = false;
-
     if (HasHitButton(game->mouseCoordinate, game->gameOver.exitButton)) {
 
-        printf("here\n");
         game->gameState = States_EXIT;
-        hit = true;
+        return;
+
+    }
+    else if (HasHitButton(game->mouseCoordinate, game->gameOver.playAgainButton)) {
+
+        game->gameState = States_GAME;
+        game->gameLogicState = GameLogicState_None;
+        printf("HERE!");
+        ResetGame(game);
         return;
 
     }
