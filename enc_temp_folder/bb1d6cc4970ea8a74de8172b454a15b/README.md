@@ -69,14 +69,8 @@ On Linux, go to build folder
 
 - Improved exit button appearance and made it functional
 
-## [1.14] -> 27 / Jan / 2025
+- ## [1.14] -> 27 / Jan / 2025
 
 ## Fix
 
 - Fixed a game state bug that didn't make player start on the right game logic state
-- 
-## [1.15] -> 28 / Jan / 2025
-
-## Fix
-
-- Gave different background to guessing and hitting states

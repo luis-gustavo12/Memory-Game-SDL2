@@ -8,6 +8,14 @@
  * 
  */
 
+#define COLOR_NAME_RED "RED"
+#define COLOR_NAME_YELLOW "YELLOW"
+#define COLOR_NAME_BLUE "BLUE"
+#define COLOR_NAME_GREEN "GREEN"
+
+#define COLOR_VALUE_RED 1
+
+
 
 #pragma once
 

@@ -29,6 +29,7 @@ int InitGame(Game* game) {
 
     game->gameButtonsSize = 0;
     game->gameLogicState = GameLogicState_None;
+    game->guessingCount = 0;
 
     // The idea in the game is basically have buttons for colors. By now, we will choose 4,
     // but in the future, the idea is to have some kind of dificulty in it.
@@ -47,6 +48,7 @@ int InitGame(Game* game) {
         game->map[i].color = gameColors[i];
         game->map[i].rectangle = gameButtonsBackground[i];
         game->gameButtonsSize++;
+        strcpy(game->map[i].buttonColorName, colorsArray[i]);
         SetButtonName(&btn, colorsArray[i]);
 
     }
@@ -70,12 +72,17 @@ int InitGame(Game* game) {
     game->score = 0;
     game->attemptHits = 0;
 
-    // Set stack to zero
+    // Set stacks to zero
     game->stackSize = 0;
     memset(&game->memoryQueue, 0, sizeof(MemoryQueue));
     game->memoryQueue.first = NULL;
     game->memoryQueue.last = NULL;
     game->memoryQueue.size = 0;
+
+    memset(&game->guessingQueue, 0, sizeof(MemoryQueue));
+    game->guessingQueue.first = NULL;
+    game->guessingQueue.last = NULL;
+    game->guessingQueue.size = 0;
 
     // start game over buttons
     SetButton(&game->gameOver.exitButton, "Exit");
@@ -194,13 +201,12 @@ void ProcessGameLogic(Game* game) {
 
         }
 
-
-
         if (hit == true) {
 
             if (game->gameLogicState == GameLogicState_Filling) {
                 Enqueue(&game->memoryQueue, &game->map[i]);
                 game->gameLogicState = GameLogicState_Guessing;
+                game->guessingCount = 0;
                 return;
             }
 
@@ -209,13 +215,16 @@ void ProcessGameLogic(Game* game) {
             else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_Awaiting) {
 
                 // checking if it was the right square
-                if (CheckMapInQueue(game->memoryQueue, game->map[i], game->memoryQueue.size)) {
-                    if (game->gameLogicState == GameLogicState_Guessing) {
-                        game->score++;
-                    }
+                if (CheckMapInQueue(game->memoryQueue, game->map[i], game->memoryQueue.size)) {    
 
-                    if (game->memoryQueue.size == game->score)
+                    game->guessingCount++;
+                    Enqueue(&game->guessingQueue, &game->map[i]);
+
+                    if (game->guessingCount == game->memoryQueue.size) {
                         game->gameLogicState = GameLogicState_Filling; // goes back to filling the stack
+                        game->score += game->memoryQueue.size;
+                        game->guessingCount = 0;
+                    }
 
                 }
                 else {

@@ -47,6 +47,7 @@ typedef struct GameButtonsMap {
 
     SDL_Color color;
     SDL_Rect rectangle;
+    char buttonColorName [32];
     struct GameButtonsMap* next; // NOTE: this part is only important when setting the queue.
 
 } GameButtonsMap;
@@ -57,7 +58,7 @@ typedef struct GameButtonsMap {
 
 typedef struct MemoryQueue {
 
-    GameButtonsMap map [3000]; // Handles the squares that the user hit
+    GameButtonsMap map [700]; // Handles the squares that the user hit
     int size;
     GameButtonsMap* first;
     GameButtonsMap* last;
@@ -74,13 +75,15 @@ typedef struct Game {
 
     // GRAPHICAL
     Button gameButtons[60]; // Holds all the squares. game.h will also have its own buttons
-    GameButtonsMap map[20];
+    GameButtonsMap map[6];
     int gameButtonsSize;
     int score;
     Button scoreButton;
     TTF_Font* scoreButtonFont;
     SDL_Color scoreButtonColor;
     MemoryQueue memoryQueue;
+    int guessingCount;
+    MemoryQueue guessingQueue;
     int stackSize;
     States gameState;
     GameLogicState gameLogicState;
