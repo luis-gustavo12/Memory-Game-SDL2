@@ -105,9 +105,14 @@ void RenderGameScreen(SDL_Renderer* renderer, Game* game, TTF_Font* font) {
         break;
 
 
+
     default: {
 
-        SDL_SetRenderDrawColor(renderer, 188, 188, 188, 255); // set background to gray
+        if (game->gameLogicState == GameLogicState_None || game->gameLogicState == GameLogicState_Guessing) 
+            SDL_SetRenderDrawColor(renderer, 129, 150, 143, 255); // set background to a greenish gray
+        else 
+            SDL_SetRenderDrawColor(renderer, 188, 188, 188, 255); // set background to gray
+
 
         SDL_RenderClear(renderer);
 
@@ -198,6 +203,8 @@ void ProcessGameLogic(Game* game) {
                 game->gameLogicState = GameLogicState_Guessing;
                 return;
             }
+
+
 
             else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_Awaiting) {
 
@@ -347,7 +354,7 @@ void ProcessGameOver(Game* game) {
     else if (HasHitButton(game->mouseCoordinate, game->gameOver.playAgainButton)) {
 
         game->gameState = States_GAME;
-        game->gameLogicState = GameLogicState_None;
+        game->gameLogicState = GameLogicState_Filling;
         printf("HERE!");
         ResetGame(game);
         return;

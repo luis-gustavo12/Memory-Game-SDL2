@@ -179,6 +179,7 @@ int main(int argc, char* argv[]) {
             if (inputType == MOUSE) {
                 if (  ClickedInside(&game, startGameButton) ) {
                     game.gameState = States_GAME;
+                    game.gameLogicState = GameLogicState_Filling;
                     break;
                 }
 

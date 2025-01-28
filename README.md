@@ -68,3 +68,9 @@ On Linux, go to build folder
 ### New
 
 - Improved exit button appearance and made it functional
+
+- ## [1.14] -> 27 / Jan / 2025
+
+## Fix
+
+- Fixed a game state bug that didn't make player start on the right game logic state
