@@ -47,7 +47,7 @@ typedef struct GameButtonsMap {
 
     SDL_Color color;
     SDL_Rect rectangle;
-    char buttonColorName [32];
+    char squareColorName [32];
     struct GameButtonsMap* next; // NOTE: this part is only important when setting the queue.
 
 } GameButtonsMap;
@@ -58,7 +58,6 @@ typedef struct GameButtonsMap {
 
 typedef struct MemoryQueue {
 
-    GameButtonsMap map [700]; // Handles the squares that the user hit
     int size;
     GameButtonsMap* first;
     GameButtonsMap* last;
@@ -81,9 +80,9 @@ typedef struct Game {
     Button scoreButton;
     TTF_Font* scoreButtonFont;
     SDL_Color scoreButtonColor;
-    MemoryQueue memoryQueue;
+    MemoryQueue* memoryQueue;
     int guessingCount;
-    MemoryQueue guessingQueue;
+    MemoryQueue* guessingQueue;
     int stackSize;
     States gameState;
     GameLogicState gameLogicState;
@@ -103,7 +102,7 @@ typedef struct Game {
 /// @brief Initialize the game struct
 /// @param game 
 /// @return 1 for success
-int InitGame(Game* game);
+Game* InitGame();
 
 /// @brief Renders the squares on the screen
 /// @param renderer Rendering context
@@ -122,13 +121,18 @@ int HasHitSquare(const MouseCoordinate mouse, GameButtonsMap map);
 
 void Enqueue(MemoryQueue* queue, GameButtonsMap* map);
 
+GameButtonsMap* GetMap(MemoryQueue* queue, int index);
 
+MemoryQueue* InitQueue();
+
+void ResetQueue(MemoryQueue* queue);
 
 /* QUEUE RELATED OPERATIONS -> END*/
 
 void ResetGame(Game* game);
 
-int CheckMapInQueue(MemoryQueue queue, GameButtonsMap map, int stackSize);
+// Checks if the user square input is correct compared to MemoryQueue map
+int CheckSquareOrderOnQueue(Game* game);
 
 int ColorsAreEqual(SDL_Color color1, SDL_Color color2);
 

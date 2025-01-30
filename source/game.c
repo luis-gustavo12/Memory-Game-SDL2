@@ -25,7 +25,11 @@ char colorsArray [4] [20] = {
 };
 
 
-int InitGame(Game* game) {
+Game* InitGame() {
+
+    Game* game = (Game*)malloc(sizeof(Game));
+
+    if (game == NULL) return NULL;
 
     game->gameButtonsSize = 0;
     game->gameLogicState = GameLogicState_None;
@@ -48,7 +52,7 @@ int InitGame(Game* game) {
         game->map[i].color = gameColors[i];
         game->map[i].rectangle = gameButtonsBackground[i];
         game->gameButtonsSize++;
-        strcpy(game->map[i].buttonColorName, colorsArray[i]);
+        strcpy(game->map[i].squareColorName, colorsArray[i]);
         SetButtonName(&btn, colorsArray[i]);
 
     }
@@ -74,15 +78,24 @@ int InitGame(Game* game) {
 
     // Set stacks to zero
     game->stackSize = 0;
-    memset(&game->memoryQueue, 0, sizeof(MemoryQueue));
-    game->memoryQueue.first = NULL;
-    game->memoryQueue.last = NULL;
-    game->memoryQueue.size = 0;
+    //memset(&game->memoryQueue, 0, sizeof(MemoryQueue));
+    //game->memoryQueue.first = NULL;
+    //game->memoryQueue.last = NULL;
+    //game->memoryQueue.size = 0;
 
-    memset(&game->guessingQueue, 0, sizeof(MemoryQueue));
-    game->guessingQueue.first = NULL;
-    game->guessingQueue.last = NULL;
-    game->guessingQueue.size = 0;
+    game->memoryQueue = InitQueue();
+
+    if (!game->memoryQueue) {
+        printf("ERROR!!\n");
+        return 0;
+    }
+    game->guessingQueue = InitQueue();
+
+    if (!game->guessingQueue) {
+        printf("ERROR IN GUESSING QUEUE!!\n");
+        return 0;
+    }
+
 
     // start game over buttons
     SetButton(&game->gameOver.exitButton, "Exit");
@@ -98,7 +111,7 @@ int InitGame(Game* game) {
     SetButtonBackgroundColorByValue(&game->gameOver.playAgainButton, 136, 71, 199, 250);
     
 
-    return 1;
+    return game;
 }
 
 void RenderGameScreen(SDL_Renderer* renderer, Game* game, TTF_Font* font) {
@@ -187,7 +200,7 @@ void ProcessGameLogic(Game* game) {
 
         printf("---------------------------------------------------------------\n");
         printf("LOGIC STATE: %d\n", game->gameLogicState);
-        printf("STACK SIZE: %d\n", game->memoryQueue.size);
+        printf("STACK SIZE: %d\n", game->memoryQueue->size);
 
         // Check through map if square was hit
         for (i = 0; i < game->gameButtonsSize; i++) {
@@ -204,7 +217,7 @@ void ProcessGameLogic(Game* game) {
         if (hit == true) {
 
             if (game->gameLogicState == GameLogicState_Filling) {
-                Enqueue(&game->memoryQueue, &game->map[i]);
+                Enqueue(game->memoryQueue, &game->map[i]);
                 game->gameLogicState = GameLogicState_Guessing;
                 game->guessingCount = 0;
                 return;
@@ -214,15 +227,16 @@ void ProcessGameLogic(Game* game) {
 
             else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_Awaiting) {
 
+                Enqueue(game->guessingQueue, &game->map[i]);
+
                 // checking if it was the right square
-                if (CheckMapInQueue(game->memoryQueue, game->map[i], game->memoryQueue.size)) {    
+                if (CheckSquareOrderOnQueue(game)) {    
 
                     game->guessingCount++;
-                    Enqueue(&game->guessingQueue, &game->map[i]);
 
-                    if (game->guessingCount == game->memoryQueue.size) {
+                    if (game->guessingCount == game->memoryQueue->size) {
                         game->gameLogicState = GameLogicState_Filling; // goes back to filling the stack
-                        game->score += game->memoryQueue.size;
+                        game->score += game->memoryQueue->size;
                         game->guessingCount = 0;
                     }
 
@@ -264,7 +278,12 @@ int HasHitSquare(const MouseCoordinate mouse, GameButtonsMap map) {
 
 void Enqueue(MemoryQueue* queue, GameButtonsMap* map) {
 
-    GameButtonsMap* newMap = map;
+    GameButtonsMap* newMap = (GameButtonsMap*)malloc(sizeof(GameButtonsMap) );
+
+    *newMap = *map;
+    newMap->next = NULL;
+
+    if (!newMap) return;
 
     if (queue->first == NULL) {
         queue->first = newMap;
@@ -281,43 +300,99 @@ void Enqueue(MemoryQueue* queue, GameButtonsMap* map) {
 
 }
 
+GameButtonsMap* GetMap(MemoryQueue* queue, int index) {
+
+    if (queue->first == NULL) return NULL;
+    int count = 0;
+
+    for (GameButtonsMap* iterator = queue->first; iterator != NULL; iterator = iterator->next) {
+        if (index == count) {
+            return iterator;
+        }
+        count++;
+    }
+
+    return NULL;
+}
+
+MemoryQueue* InitQueue() {
+
+    MemoryQueue* newQueue = (MemoryQueue*)malloc (sizeof(MemoryQueue) );
+
+    if (!newQueue) {
+        return NULL;
+    }
+
+    newQueue->first = NULL;
+    newQueue->last = NULL;
+    newQueue->size = 0;
+    return newQueue;
+}
+
+void ResetQueue(MemoryQueue* queue) {
+
+    if (queue->size == 0) return;
+    GameButtonsMap* iterator = queue->first;
+
+    while ( iterator != NULL) {
+
+        GameButtonsMap* aux = iterator->next;
+        free(iterator);
+        iterator = aux;
+
+    }
+
+    queue->size = 0;
+    queue->first = NULL;
+    queue->last = NULL;
+
+}
+
 
 
 /* QUEUE RELATED OPERATIONS -> END*/
 
 
 void ResetGame(Game* game) {
-    memset(&game->memoryQueue, 0, sizeof(game->memoryQueue));
+    ResetQueue(game->memoryQueue);
+    ResetQueue(game->guessingQueue);
     game->score = 0;
     game->attemptHits = 0;
 }
 
-int CheckMapInQueue(MemoryQueue queue, GameButtonsMap map, int stackSize) {
+int CheckSquareOrderOnQueue(Game* game) {
 
-    GameButtonsMap* iterator = queue.first;
-    int i = 0;
-    printf("STACK SIZE-%s : %d\n", __func__ ,stackSize);
+    int index = game->guessingQueue->size - 1; // it has to be -1, because the guess is added to the queue, so its size increases by 1
 
-    while (i < stackSize) {
+    GameButtonsMap* memoryButton = GetMap(game->memoryQueue, index);
+    GameButtonsMap* guessingButton = GetMap(game->guessingQueue, index);
 
-        printf("ITERATOR: %d\n", i);
-        printf("R: %d G: %d B: %d A: %d\n", iterator->color.r, iterator->color.g, iterator->color.b, iterator->color.a);
-        printf("MAP\n");
-        printf("R: %d G: %d B: %d A: %d\n", map.color.r, map.color.g, map.color.b, map.color.a);
-        
+    if (!memoryButton || !guessingButton) {
+        printf("ERROR!!\n");
+        //return 0;
+    }
 
-        if (ColorsAreEqual(iterator->color, map.color) == true) {
-            printf("SQUARE HIT WAS INSIDE THE QUEUE\n");
-            return 1;
-        }
+    if (!memoryButton) {
+        GameButtonsMap* dbg = GetMap(game->memoryQueue, index);
 
-        i++;
+        printf("NOT MEMORY BUTTON\n");
+    }
+
+    if (memoryButton == NULL) {
+        printf("NULL HERE!\n");
+    }
+
+    printf("Color at index %d is [%s]\n", index, memoryButton->squareColorName);
+
+    if (!strcmp(memoryButton->squareColorName, guessingButton->squareColorName)) {
+
+        printf("THEY'VE HIT THE SAME SQURE!!\n");
+        return 1;
 
     }
 
-    printf("SQUARE WAS NOT PART OF THE QUEUE\n");
-
     return 0;
+
 }
 
 int ColorsAreEqual(SDL_Color color1, SDL_Color color2) {
