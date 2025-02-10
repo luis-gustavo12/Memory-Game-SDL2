@@ -11,7 +11,7 @@ find_package(SDL2 REQUIRED)
 
 find_package(SDL2_ttf REQUIRED)
 
-add_executable( ${PROJECT_NAME} ${SOURCES})
+add_executable( ${PROJECT_NAME} ${SOURCES} "source/log.h" "source/log.c")
 
 
 

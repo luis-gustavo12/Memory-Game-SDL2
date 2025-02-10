@@ -116,6 +116,7 @@ int main(int argc, char* argv[]) {
     bool skip = 0;
     InputType inputType = EMPTY;
 
+    Log("start", LogLevel_INFO);
 
     // main loop
     while (running) {
@@ -127,13 +128,14 @@ int main(int argc, char* argv[]) {
             switch (ev.type) {
 
             case SDL_QUIT: 
-                printf("QUIT CALLED!!\n");
+                Log("QUIT CALLED!!", LogLevel_INFO);
                 running = false;
                 continue;
 
             case SDL_MOUSEBUTTONDOWN:
-                printf("SDL_MOUSEBUTTONDOWN X: %d Y: %d\n",
-                    ev.button.x, ev.button.y);
+                char dbg[32];
+                sprintf(dbg, "SDL_MOUSEBUTTONDOWN X: %d Y: %d", ev.button.x, ev.button.y);
+                Log(dbg, LogLevel_INFO);
                 inputType = MOUSE;
                 ProcessMouseInput(&ev, game);
                 break;

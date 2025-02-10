@@ -86,13 +86,13 @@ Game* InitGame() {
     game->memoryQueue = InitQueue();
 
     if (!game->memoryQueue) {
-        printf("ERROR!!\n");
+        Log("Error in memory queue!!", LogLevel_ERROR);
         return 0;
     }
     game->guessingQueue = InitQueue();
 
     if (!game->guessingQueue) {
-        printf("ERROR IN GUESSING QUEUE!!\n");
+        Log("Error in guessing queue!!", LogLevel_ERROR);
         return 0;
     }
 
@@ -158,7 +158,7 @@ void RenderGameScreen(SDL_Renderer* renderer, Game* game, TTF_Font* font) {
 
         // show game logic state
         if (game->gameLogicState == GameLogicState_Filling) {
-            strcpy(gameLogicStateText, "Hit the squares!!");
+            strcpy(gameLogicStateText, "Fill the sequence!!");
         }
         else if (game->gameLogicState == GameLogicState_Guessing || game->gameLogicState == GameLogicState_None) {
             strcpy(gameLogicStateText, "Try to guess it!!");
@@ -197,10 +197,16 @@ void ProcessGameLogic(Game* game) {
     default: {
         // Setting state for the first time
         if (game->gameLogicState == GameLogicState_None) game->gameLogicState = GameLogicState_Filling;
+        {
+            char dbg[32];
+            Log("---------------------------------------------------------------", LogLevel_INFO);
 
-        printf("---------------------------------------------------------------\n");
-        printf("LOGIC STATE: %d\n", game->gameLogicState);
-        printf("STACK SIZE: %d\n", game->memoryQueue->size);
+            sprintf(dbg, "LOGIC STATE: %d", game->gameLogicState);
+            Log(dbg, LogLevel_INFO);
+            sprintf(dbg, "STACK SIZE: %d", game->memoryQueue->size);
+            Log(dbg, LogLevel_INFO);
+            DebugStack(game);
+        }
 
         // Check through map if square was hit
         for (i = 0; i < game->gameButtonsSize; i++) {
@@ -242,7 +248,7 @@ void ProcessGameLogic(Game* game) {
 
                 }
                 else {
-                    printf("YOU LOST\n");
+                    Log("YOU LOST", LogLevel_INFO);
                     game->gameLogicState = GameLogicState_GameOver;
                 }
 
@@ -264,12 +270,12 @@ int HasHitSquare(const MouseCoordinate mouse, GameButtonsMap map) {
     if ( (mouse.xClick >= map.rectangle.x && mouse.xClick <= (map.rectangle.x + map.rectangle.w) )  && 
         (mouse.yClick >= map.rectangle.y && mouse.yClick <= (map.rectangle.y + map.rectangle.h))  ) {
 
-            printf("INSIDE\n");
+            Log("INSIDE", LogLevel_INFO);
             return 1;
         }
 
 
-    printf("OUTSIDE\n");
+    Log("OUTSIDE", LogLevel_INFO);
     return 0;
 }
 
@@ -364,29 +370,32 @@ int CheckSquareOrderOnQueue(Game* game) {
 
     int index = game->guessingQueue->size - 1; // it has to be -1, because the guess is added to the queue, so its size increases by 1
 
-    GameButtonsMap* memoryButton = GetMap(game->memoryQueue, index);
+    GameButtonsMap* memoryButton = GetMap(game->memoryQueue, game->memoryQueue->size - 1);
     GameButtonsMap* guessingButton = GetMap(game->guessingQueue, index);
 
     if (!memoryButton || !guessingButton) {
-        printf("ERROR!!\n");
+        Log("ERROR!!", LogLevel_ERROR);
         //return 0;
     }
 
     if (!memoryButton) {
         GameButtonsMap* dbg = GetMap(game->memoryQueue, index);
 
-        printf("NOT MEMORY BUTTON\n");
+        Log("NOT MEMORY BUTTON", LogLevel_INFO);
     }
 
     if (memoryButton == NULL) {
-        printf("NULL HERE!\n");
+        Log("NULL HERE!", LogLevel_INFO);
     }
 
-    printf("Color at index %d is [%s]\n", index, memoryButton->squareColorName);
+    char dbg[32];
+
+    sprintf(dbg, "Color at index %d is [%s]", index, memoryButton->squareColorName);
+    Log(dbg, LogLevel_INFO);
 
     if (!strcmp(memoryButton->squareColorName, guessingButton->squareColorName)) {
 
-        printf("THEY'VE HIT THE SAME SQURE!!\n");
+        Log("THEY'VE HIT THE SAME SQURE!!", LogLevel_INFO);
         return 1;
 
     }
@@ -451,6 +460,38 @@ int HasHitButton(MouseCoordinate mouse, Button button) {
 
     return ( (mouse.xClick >= button.buttonBackGround.x) && (mouse.xClick <= (button.buttonBackGround.x + button.buttonBackGround.w) ) ) &&
            ( (mouse.yClick >= button.buttonBackGround.y) && (mouse.yClick <= (button.buttonBackGround.y + button.buttonBackGround.h) ) );
+
+
+}
+
+void DebugStack(Game* game) {
+
+    Log("%s BEGIN!!!", LogLevel_INFO);
+
+    Log("*** *** *** MEMORY-STACK *** *** ***", LogLevel_INFO);
+
+    GameButtonsMap* iterator = game->memoryQueue->first;
+
+    for (int i = 0; i < game->memoryQueue->size; i++) {
+
+        if (!iterator) {
+            Log("Iterator is null!!", LogLevel_WARN);
+            continue;
+        }
+
+        char dbg[32];
+
+        sprintf(dbg, "Position: %d", i);
+        Log(dbg, LogLevel_INFO);
+        sprintf(dbg, "Color: [%s]", iterator->squareColorName);
+        Log(dbg, LogLevel_INFO);
+
+        iterator = iterator->next;
+
+    }
+
+
+
 
 
 }

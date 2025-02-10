@@ -15,6 +15,7 @@
 #include "SDL2/SDL_ttf.h"
 #include "stdbool.h"
 #include "display.h"
+#include "log.h"
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
@@ -147,3 +148,5 @@ int ClickedInside(Game* game, const Button button);
 void ProcessGameOver(Game* game);
 
 int HasHitButton(MouseCoordinate mouse, Button button);
+
+void DebugStack(Game* game);
