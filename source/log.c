@@ -62,7 +62,7 @@ void Log(char* info, LogLevel level) {
 
 	strftime(fullMonth, sizeof(fullMonth), "%B", local);
 
-	sprintf(milliSec, "%ld", GetMillisec());
+	snprintf(milliSec, sizeof(milliSec), "%03ld", GetMillisec());
 
 	snprintf(timestamp, sizeof(timestamp), "%02d/%s/%d %02d:%02d:%02d.%s",
 		local->tm_mday,

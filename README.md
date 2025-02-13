@@ -86,3 +86,9 @@ On Linux, go to build folder
 ## Fix
 
 - Fixed Guessing Queue Bug when pressed play again button
+
+## [1.17] -> 13 / Feb / 2025
+
+## Fix
+
+- Fixed a bugging count on the order of the squares

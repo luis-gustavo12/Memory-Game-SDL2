@@ -235,15 +235,18 @@ void ProcessGameLogic(Game* game) {
 
                 Enqueue(game->guessingQueue, &game->map[i]);
 
+                game->guessingCount++;
+
                 // checking if it was the right square
                 if (CheckSquareOrderOnQueue(game)) {    
 
-                    game->guessingCount++;
+                    
 
                     if (game->guessingCount == game->memoryQueue->size) {
                         game->gameLogicState = GameLogicState_Filling; // goes back to filling the stack
                         game->score += game->memoryQueue->size;
                         game->guessingCount = 0;
+                        ResetQueue(game->guessingQueue);
                     }
 
                 }
@@ -368,37 +371,51 @@ void ResetGame(Game* game) {
 
 int CheckSquareOrderOnQueue(Game* game) {
 
-    int index = game->guessingQueue->size - 1; // it has to be -1, because the guess is added to the queue, so its size increases by 1
+    int index; 
+    char dbg[64];
 
-    GameButtonsMap* memoryButton = GetMap(game->memoryQueue, game->memoryQueue->size - 1);
+    index = game->guessingCount - 1; // it has to be -1, because the guess is added to the queue, so its size increases by 1
+
+    GameButtonsMap* memoryButton = GetMap(game->memoryQueue, index);
     GameButtonsMap* guessingButton = GetMap(game->guessingQueue, index);
+
+    snprintf(dbg, sizeof(dbg), "The user hit the collor [%s] at index %d", guessingButton->squareColorName, index);
+    Log(dbg, LogLevel_INFO);
+
+    snprintf(dbg, sizeof(dbg), "The memory queue at index %d is [%s]", index, memoryButton->squareColorName);
+    Log(dbg, LogLevel_INFO);
 
     if (!memoryButton || !guessingButton) {
         Log("ERROR!!", LogLevel_ERROR);
-        //return 0;
+        game->gameState = States_EXIT;
+        return 0;
     }
 
     if (!memoryButton) {
         GameButtonsMap* dbg = GetMap(game->memoryQueue, index);
 
-        Log("NOT MEMORY BUTTON", LogLevel_INFO);
+        Log("NOT MEMORY BUTTON", LogLevel_FATAL);
     }
 
     if (memoryButton == NULL) {
         Log("NULL HERE!", LogLevel_INFO);
     }
 
-    char dbg[32];
+    
 
-    sprintf(dbg, "Color at index %d is [%s]", index, memoryButton->squareColorName);
-    Log(dbg, LogLevel_INFO);
+    if (memoryButton) {
 
-    if (!strcmp(memoryButton->squareColorName, guessingButton->squareColorName)) {
 
-        Log("THEY'VE HIT THE SAME SQURE!!", LogLevel_INFO);
-        return 1;
+
+        if (!strcmp(memoryButton->squareColorName, guessingButton->squareColorName)) {
+
+            Log("THEY'VE HIT THE SAME SQURE!!", LogLevel_INFO);
+            return 1;
+
+        }
 
     }
+
 
     return 0;
 
@@ -466,7 +483,7 @@ int HasHitButton(MouseCoordinate mouse, Button button) {
 
 void DebugStack(Game* game) {
 
-    Log("%s BEGIN!!!", LogLevel_INFO);
+    Log("DebugStack BEGIN!!!", LogLevel_INFO);
 
     Log("*** *** *** MEMORY-STACK *** *** ***", LogLevel_INFO);
 
@@ -475,7 +492,7 @@ void DebugStack(Game* game) {
     for (int i = 0; i < game->memoryQueue->size; i++) {
 
         if (!iterator) {
-            Log("Iterator is null!!", LogLevel_WARN);
+            Log("memoryQueue Iterator is null!!", LogLevel_WARN);
             continue;
         }
 
@@ -491,7 +508,27 @@ void DebugStack(Game* game) {
     }
 
 
+    Log("*** *** *** GUESSING-STACK *** *** ***", LogLevel_INFO);
 
+    iterator = game->guessingQueue->first;
+
+    for (int i = 0; i < game->guessingQueue->size; i++) {
+
+        if (!iterator) {
+            Log("guessingQueue Iterator is null!!", LogLevel_WARN);
+            continue;
+        }
+
+        char dbg[32];
+
+        sprintf(dbg, "Position: %d", i);
+        Log(dbg, LogLevel_INFO);
+        sprintf(dbg, "Color: [%s]", iterator->squareColorName);
+        Log(dbg, LogLevel_INFO);
+
+        iterator = iterator->next;
+
+    }
 
 
 }

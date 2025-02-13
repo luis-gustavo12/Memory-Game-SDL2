@@ -252,6 +252,7 @@ int main(int argc, char* argv[]) {
     SDL_Quit();
     free(game);
 
+    exit(0);
     return 0;
 }
 
