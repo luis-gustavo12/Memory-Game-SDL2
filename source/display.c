@@ -4,10 +4,24 @@
 
 
 
-void SetButton(Button* button, char* text) {
-    if (text != NULL) strcpy(button->text, text);
-    else memset(button->text, 0, sizeof(button->text));
+void SetButton(Button* button, const char* text) {
+    if (button == NULL) 
+        return; 
+    
+
+    if (text != NULL) {
+#ifndef _CRT_SECURE_NO_WARNINGS
+        strcpy(button->text, text);
+#else
+        strcpy_s(button->text, sizeof(button->text), text);
+#endif
+    }
+    
+    else 
+        memset(button->text, 0, sizeof(button->text));  // Clear the text
+    
 }
+
 
 void SetButtonBackGroundPositions(Button* button, int x, int y, int w, int h) {
     button->buttonBackGround.x = x;
@@ -19,8 +33,8 @@ void SetButtonBackGroundPositions(Button* button, int x, int y, int w, int h) {
 void SetButtonTextPositions(Button* button) {
     button->buttonText.x = button->buttonBackGround.x + 50;
     button->buttonText.y = button->buttonBackGround.y + 50;
-    button->buttonText.w = (int)button->buttonBackGround.w * 0.4;
-    button->buttonText.h = (int)button->buttonBackGround.h * 0.4;
+    button->buttonText.w = (int)(button->buttonBackGround.w * 0.4);
+    button->buttonText.h = (int)(button->buttonBackGround.h * 0.4);
 }
 
 

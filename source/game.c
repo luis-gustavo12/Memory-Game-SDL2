@@ -25,7 +25,7 @@ char colorsArray [4] [20] = {
 };
 
 
-Game* InitGame() {
+Game* InitGame(void) {
 
     Game* game = (Game*)malloc(sizeof(Game));
 
@@ -324,7 +324,7 @@ GameButtonsMap* GetMap(MemoryQueue* queue, int index) {
     return NULL;
 }
 
-MemoryQueue* InitQueue() {
+MemoryQueue* InitQueue(void) {
 
     MemoryQueue* newQueue = (MemoryQueue*)malloc (sizeof(MemoryQueue) );
 

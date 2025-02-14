@@ -92,3 +92,9 @@ On Linux, go to build folder
 ## Fix
 
 - Fixed a bugging count on the order of the squares
+- Added logging module
+
+
+## [1.17] -> 14 / Feb / 2025
+
+- Fixed some compiler warning issues, and added specific compiler warnings

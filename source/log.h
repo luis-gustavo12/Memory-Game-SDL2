@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef WINDOWS
 #include <Windows.h>
@@ -26,4 +27,4 @@ void TranslateLogLevel(char* buff, LogLevel level);
 
 void Log(char* info, LogLevel	level);
 
-long GetMillisec();
+long GetMillisec(void);

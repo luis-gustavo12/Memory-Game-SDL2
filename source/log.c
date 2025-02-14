@@ -119,7 +119,7 @@ void Log(char* info, LogLevel level) {
 	free(buff);
 }
 
-long GetMillisec() {
+long GetMillisec(void) {
 
 #ifdef WINDOWS
 	SYSTEMTIME lt;
@@ -136,7 +136,7 @@ long GetMillisec() {
 #endif
 
 
-	return 0;
+	//return 0;
 }
 
 

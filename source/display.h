@@ -21,6 +21,7 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
+#include "string.h"
 
 
 /// @brief Representation of a button on the screen, can be used anywhere as long as
@@ -42,7 +43,7 @@ typedef struct Button {
 /// @brief Sets the button a text
 /// @param button The button you want to display
 /// @param text The text that will be displayed on the screen
-void SetButton(Button* button, char* text);
+void SetButton(Button* button, const char* text);
 
 /// @brief Set the x, y, width and height coordinates of the button
 /// @param button The button you want to set

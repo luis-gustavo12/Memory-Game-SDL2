@@ -9,6 +9,9 @@
  */
 
 
+
+
+
 #pragma once
 
 #include "SDL2/SDL.h"
@@ -19,6 +22,10 @@
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
+
+#ifdef WINDOWS
+#pragma warning(disable : 4820)
+#endif // WINDOWS
 
 
 typedef enum {
@@ -57,11 +64,12 @@ typedef struct GameButtonsMap {
 
 
 
+
 typedef struct MemoryQueue {
 
-    int size;
     GameButtonsMap* first;
     GameButtonsMap* last;
+    int size;
 
 } MemoryQueue;
 
@@ -103,7 +111,7 @@ typedef struct Game {
 /// @brief Initialize the game struct
 /// @param game 
 /// @return 1 for success
-Game* InitGame();
+Game* InitGame(void);
 
 /// @brief Renders the squares on the screen
 /// @param renderer Rendering context
@@ -124,7 +132,7 @@ void Enqueue(MemoryQueue* queue, GameButtonsMap* map);
 
 GameButtonsMap* GetMap(MemoryQueue* queue, int index);
 
-MemoryQueue* InitQueue();
+MemoryQueue* InitQueue(void);
 
 void ResetQueue(MemoryQueue* queue);
 
